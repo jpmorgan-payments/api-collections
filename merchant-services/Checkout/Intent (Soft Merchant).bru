@@ -1,0 +1,76 @@
+meta {
+  name: Intent (Soft Merchant)
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{checkout_url}}/intent
+  body: json
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchant-id}}
+  requestId: {{request-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "currencyCode": "USD",
+    "cart": {
+      "totalTransactionAmount": 1000
+    },
+    "consumer": {
+      "email": "{{$randomEmail}}",
+      "billingAddress": {
+        "recipientFullName": "{{$randomFullName}}",
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "CA",
+        "country": "US",
+        "postalCode": "95000"
+      }
+    },
+    "checkoutOptions": {
+      "authorization": {
+        "authorizationType": "AUTH_METHOD_CART_AMOUNT",
+        "softMerchant": {
+          "name": "JPMChase",
+          "merchantPurchaseDescription": "po123",
+          "city": "{{$randomCity}}",
+          "phone": "{{$randomPhoneNumber}}",
+          "visaMerchantVerificationValueId": "visa123",
+          "foreignMerchantIndicator": false,
+          "merchantIncorporationStatus": "6",
+          "address": {
+            "line1": "{{$randomStreetAddress}}",
+            "city": "{{$randomCity}}",
+            "state": "FL",
+            "country": "usa",
+            "postalCode": "33601"
+          }
+        }
+      },
+      "capture": {
+        "captureMethod": "CAPTURE_METHOD_NOW"
+      },
+      "consumerProfileOptions": {
+        "isSaveConsumerProfile": "false"
+      }
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4().slice(1,20))
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}

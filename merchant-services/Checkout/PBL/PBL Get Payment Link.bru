@@ -1,0 +1,19 @@
+meta {
+  name: PBL Get Payment Link
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{checkout_url_0}}/payment-links/{{checkout_linkID}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}

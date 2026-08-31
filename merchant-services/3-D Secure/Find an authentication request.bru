@@ -1,0 +1,47 @@
+meta {
+  name: Find an authentication request
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{3ds_url}}/authentications/{{3dsauthid}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  
+}
+
+tests {
+  // Set transactionId to variable for further use
+  if(res.body.transactionId) {
+  bru.setEnvVar("transactionId", res.body.transactionId);
+  }
+  
+  // Set 3DS Authentication Value to variable for further use
+  if(res.body.authenticationResult.threeDomainSecureCompletion.threeDSAuthenticationValue) {
+  bru.setEnvVar("3dsAuthValue", res.body.authenticationResult.threeDomainSecureCompletion.threeDSAuthenticationValue);
+  }
+  
+  // Set 3DS ECI to variable for further use
+  if(res.body.authenticationResult.threeDomainSecureCompletion.electronicCommerceIndicator) {
+  bru.setEnvVar("3dsECI", res.body.authenticationResult.threeDomainSecureCompletion.electronicCommerceIndicator);
+  }
+}

@@ -1,0 +1,22 @@
+meta {
+  name: Get - MATCH_NO_UPDATE by response Id
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{accountupdater_url}}/account-updates/{{mnuotqrespId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,29 @@
+meta {
+  name: Update Communication Method (defaultemail)
+  type: http
+  seq: 17
+}
+
+patch {
+  url: {{consumerprofile_url}}/consumer-profiles/{{consumerprofileid}}/communication/{{consumerprofilecomemailid}}/default
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  requestIdentifier: {{request-id}}
+  merchantIdentifier: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}

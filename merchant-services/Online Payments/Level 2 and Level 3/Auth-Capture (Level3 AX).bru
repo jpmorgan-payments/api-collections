@@ -1,0 +1,187 @@
+meta {
+  name: Auth-Capture (Level3 AX)
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{online_url}}/payments
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "captureMethod": "NOW",
+    "amount": 1250,
+    "currency": "USD",
+    "statementDescriptor": "{{$randomProductAdjective}}",
+    "initiatorType": "CARDHOLDER",
+    "accountOnFile": "STORED",
+    "paymentMethodType": {
+      "card": {
+        "accountNumber": "{{cardNum}}",
+        "expiry": {
+          "month": 5,
+          "year": 2040
+        },
+        "cardType": "AX",
+        "cvv": 1234
+      }
+    },
+    "recurring": {
+      "recurringSequence": "FIRST"
+    },
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "{{$randomProduct}}",
+        "version": "2.0"
+      },
+      "softMerchant": {
+        "name": "{{$randomFirstName}}",
+        "address": {
+          "postalCode": "33626",
+          "line1": "{{$randomStreetAddress}}"
+        }
+      }
+    },
+    "accountHolder": {
+      "billingAddress": {
+        "line1": "{{$randomStreetAddress}}",
+        "line2": "{{$randomStreetAddress}}",
+        "state": "{{$randomCountryCode}}",
+        "city": "{{$randomCity}}",
+        "postalCode": "33626",
+        "countryCode": "USA"
+      },
+      "firstName": "{{$randomFirstName}}",
+      "lastName": "{{$randomLastName}}"
+    },
+    "retailAddenda": {
+      "taxAmount": 100,
+      "isTaxable": true,
+      "purchaseOrderNumber": "{{merchantOrderNumber}}",
+      "orderDate": "2026-09-10",
+      "level3": {
+        "totalShippingAmount": 100,
+        "dutyAmount": 500,
+        "shipToAddressPostalCode": "33607",
+        "shipToAddressCountryCode": "USA",
+        "shipFromAddressPostalCode": 34490,
+        "totalTransactionDiscountAmount": 20,
+        "shippingValueAddedTaxAmount": 50,
+        "shippingValueAddedTaxPercent": 10,
+        "orderDiscountTreatmentCode": 2,
+        "valueAddedTaxAmount": 54,
+        "valueAddedTaxPercent": 90,
+        "valueAddedTaxInvoiceReferenceNumber": 9999,
+        "partyTaxGovernmentIssuedIdentifier": 30,
+        "alternateTaxAmount": 2,
+        "lineItems": [
+          {
+            "lineItemDescriptionText": "{{$randomProduct}}",
+            "merchantProductIdentifier": "041",
+            "itemComodityCode": "1234",
+            "lineItemUnitQuantity": "1",
+            "lineItemUnitofMeasureCode": "UNIT",
+            "unitPriceAmount": 1000,
+            "taxInclusiveLineItemTotalAmount": 120,
+            "transactionDiscountAmount": 10,
+            "purchaseTransactionDiscountPercent": 30,
+            "lineItemDiscountTreatmentCode": "1",
+            "lineItemDetailCode": "0",
+            "lineItemTaxIndicator": true,
+            "lineItemDiscountIndicator": true,
+            "lineItemTaxes": [
+              {
+                "lineItemTaxAmount": 30,
+                "taxPercent": "20%",
+                "taxTypeCode": "0124"
+              }
+            ]
+          },
+          {
+            "lineItemDescriptionText": "{{$randomProduct}}",
+            "merchantProductIdentifier": "041",
+            "itemComodityCode": "1234",
+            "lineItemUnitQuantity": "1",
+            "lineItemUnitofMeasureCode": "UNIT",
+            "unitPriceAmount": 1000,
+            "taxInclusiveLineItemTotalAmount": 120,
+            "transactionDiscountAmount": 10,
+            "purchaseTransactionDiscountPercent": 30,
+            "lineItemDiscountTreatmentCode": "1",
+            "lineItemDetailCode": "0",
+            "lineItemTaxIndicator": true,
+            "lineItemDiscountIndicator": true,
+            "lineItemTaxes": [
+              {
+                "lineItemTaxAmount": 30,
+                "taxPercent": "20%",
+                "taxTypeCode": "0124"
+              }
+            ]
+          },
+          {
+            "lineItemDescriptionText": "{{$randomProduct}}",
+            "merchantProductIdentifier": "041",
+            "itemComodityCode": "1234",
+            "lineItemUnitQuantity": "1",
+            "lineItemUnitofMeasureCode": "UNIT",
+            "unitPriceAmount": 1000,
+            "taxInclusiveLineItemTotalAmount": 120,
+            "transactionDiscountAmount": 10,
+            "purchaseTransactionDiscountPercent": 30,
+            "lineItemDiscountTreatmentCode": "1",
+            "lineItemDetailCode": "0",
+            "lineItemTaxIndicator": true,
+            "lineItemDiscountIndicator": true,
+            "lineItemTaxes": [
+              {
+                "lineItemTaxAmount": 30,
+                "taxPercent": "20%",
+                "taxTypeCode": "0124"
+              }
+            ]
+          }
+        ],
+        "transactionAdvices": [
+          {
+            "transactionAdviceText": "TAA1 record"
+          }
+        ]
+      }
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  // Set transactionId to variable for further use
+  if(res.body.transactionId) {
+  bru.setEnvVar("transactionId", res.body.transactionId);
+  }
+  
+  // Set requestId to variable for further use
+  if(res.body.requestId) {
+  bru.setEnvVar("authRequestId", res.body.requestId);
+  }
+}

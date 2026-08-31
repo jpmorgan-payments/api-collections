@@ -1,0 +1,36 @@
+meta {
+  name: Patch PBL
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{checkout_url_0}}/payment-links/{{checkout_linkID}}?status=LINK_STATUS_INACTIVE
+  body: json
+  auth: inherit
+}
+
+params:query {
+  status: LINK_STATUS_INACTIVE
+}
+
+headers {
+  merchantId: {{merchant-id}}
+  requestId: {{request-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+tests {
+  //saving the link id
+  if(res.body.link.linkId){
+    bru.setEnvVar("checkout_linkID",res.body.link.linkId);
+  }
+  
+  //saving the merchant order number
+  if(res.body.link.merchantOrderNumber){
+  bru.setEnvVar("merchantOrderNumber",res.body.link.merchantOrderNumber);
+  }
+}

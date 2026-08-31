@@ -1,0 +1,23 @@
+meta {
+  name: Only Access Token
+  type: http
+  seq: 13
+}
+
+post {
+  url: https://idag2.jpmorganchase.com/adfs/oauth2/token
+  body: formUrlEncoded
+  auth: none
+}
+
+body:form-urlencoded {
+  grant_type: client_credentials
+  client_id: {{clientId}}
+  resource: <YOUR_RESOURCE_URN>
+  client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+  client_assertion: {{JWSPayload}}
+}
+
+script:post-response {
+  bru.setEnvVar("auth-token", res.body.access_token);
+}

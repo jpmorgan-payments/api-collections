@@ -1,0 +1,39 @@
+meta {
+  name: Wallet Decrypt (Apple Pay)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{online_url}}/wallet-decryptions
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "encryptedPayloadText": "0gGxh858yAs3cPp9/1qrQnvx5At1o2xFuEkvZyZETWrrVMaUrxKATkeSEUfaimUnso3O9ffoZO1xvCkh4/Jg7Ihrbl8t3qhSz8LuBCFNh4OPKuqUN0ob/+H8BMXYT6NVhIbkBkGhECG16MsUNZAu4qbD44l82UOxdvwwWkr8yUvCmwED9yn0DMhR8tomLRo1CK/xCuqSekW3w8cV3u7Ug4rY9tey8O6Ch7OoB/xVrtHzMp1OmFsYnmGjfC0vIHuJPQuaJUNc/x8h+eamMzDpGbb+/I9VHOJ+YueMiH/lnrG7p2swKvGHlmeG7OPYtgs4qaGlAi7qI530fMugLf6m0F1m/pOy9KNIYQewG6OWxApsDC9Qm+4tKOw55/htln5kvZ/GEPCl3BKYgTGmhf+Zg1Oy15wRraTGx5wXrvSF+InyzWCKAcelXcokMFpV3gaT9sIyc9B+C5Gkrqmkc1mAlrmrhdKSoOPivJ2sNi5gYyFSGk+OmAszVJMbEA8IW15fLekR+I6DRZFH50pksypdMM17tQMUsoq/UJ5KxWkNTAlR1xMn/bAKKzrNNZv8XoRrj6lCtjDeuy79n/24EuueYJag9cD/8nVB4FpBAHkGoH/t9CAZf7Fma7vtRlWE7Rf+AAYQ6BQTCsUP1tONgZyVxc2re1AYXfN5Y9QdyCdYWMS9uGyFGY6ML2yv3F0XAvrlJfSfYSTf1NTVqfS46gPQpjRAqWGxxs9jONpWEgdukGS2XTBUvfUg/0fwIbcP4j+g/YYJQrn3XzpdvOflpF8gVsdKnF6If/dyJ96pDmfH4LJAIQsYa9ikMfh5SpoSekU6aahleveQ5abflDwW+8hE+TmrZc9inq0XRI4zbmUwMbK1WhGUMj33GCh8Ar2Z27cTKgR3+m04Wto7/IVeIGaGIxHE8hNON+BLnIDpq/eyst+Gerlfyqy7pX2CQ8aEWa8m5oCenjJTG2etA+qjUcVCS7Fyo21UE1jSDrfY6GYLBvKGnKOAUNVgkN36ZJXr8mhk0oDzhmGUZmpSNh0wCdgLyE0mAtjHAzVVUfcPDoOEwOMwWG5lW3gUNUm1hQxXma7CELCpQFqb3OMlhqz4HfsyD242Xu2s4xLUvV5M9H0qbrcBE9RlFyV5lsHB7pAS7EfFVAL8up2McsX+ICLOYccZQkrvzskzmXD51XzcDmuR930jvEhqJa5ADSmbFxLXzTCSZJz/FLmsSaPt6uVlLQ==",
+    "walletProvider": "APPLE_PAY",
+    "walletTransactionId": "27ed51c15512070be3058fb6070c2e63ddd69ca2e75b3187e2af6faf92ba2901",
+    "walletApplicationData": "27ed51c15512070be3058fb6070c2e63ddd69ca2e75b3187e2af6faf92ba2901",
+    "digitalSignature": "MIAGCSqGSIb3DQEHAqCAMIACAQExDTALBglghkgBZQMEAgEwCwYJKoZIhvcNAQcBoIAwggFiMIIBCKADAgECAgYBXWU4+wEwCgYIKoZIzj0EAwMwODEhMB8GA1UEAwwYUGF5bWVudGVjaCBNb2JpbGUgU0RLIENBMRMwEQYDVQQKDApQYXltZW50ZWNoMB4XDTE3MDcyMTEyNTY1OVoXDTM0MDcyMTEyNTY1OVowODEhMB8GA1UEAwwYUGF5bWVudGVjaCBNb2JpbGUgU0RLIENBMRMwEQYDVQQKDApQYXltZW50ZWNoMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQq5cwf1DdtmV6R5O4iaiPE+4dCfEDiMgqIXAXfA4fqdBj3hqw6YssvCzckP22/YzY/umlSX3rWvXlrDjwaevZTAKBggqhkjOPQQDAwNIADBFAiEAi9wsxbzfCB28fQyGLVklr3cJXltjpG7kYpj/S81vUXgCIE7hs86pbthHwaUnrHzbe/H4ABNODmChxgauPy2q4+eNAAAxggFDMIIBPwIBATBCMDgxITAfBgNVBAMMGFBheW1lbnRlY2ggTW9iaWxlIFNESyBDQTETMBEGA1UECgwKUGF5bWVudGVjaAIGAV1lOPsBMAsGCWCGSAFlAwQCAaCBkzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yNDA3MDgyMDEyNDJaMCgGCSqGSIb3DQEJNDEbMBkwCwYJYIZIAWUDBAIBoQoGCCqGSM49BAMCMC8GCSqGSIb3DQEJBDEiBCApyS76wnLoE50m8IN9nTK248Tj2K1je76z+IIKEH9OezAKBggqhkjOPQQDAgRHMEUCICX1jTpwsrHaEmjy4gJl+IRLdrIwcTuqJQN+f/qDpoxkAiEA8SdYhqpQXCWZOWWWPMbVu1PprUyQ4RlDcG9bA4wTggkAAAAAAAA=",
+    "version": "EC_v1",
+    "keyHash": "xVC/RhZQk4eWVtID9DMSnzoRnBoGF7z3jvm4iWztpis=",
+    "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmwK0foCYZAwrPM4AzSkhemnkqr8ZWdYQKDGUENGwpP3xJyiiwckTP6cqgkzBHI4nXP1iGaFbh2KNIOBQ2nI0jw=="
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+}

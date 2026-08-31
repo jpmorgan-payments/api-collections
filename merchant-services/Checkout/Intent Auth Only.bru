@@ -1,0 +1,47 @@
+meta {
+  name: Intent Auth Only
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{checkout_url}}/intent
+  body: json
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchant-id}}
+  requestId: {{request-id}}
+  segmentId: {{merchant-id}}__00
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "currencyCode": "USD",
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "checkoutOptions": {
+      "authorization": {
+        "authorizationType": "AUTH_METHOD_CART_AMOUNT"
+      },
+      "capture": {
+        "captureMethod": "CAPTURE_METHOD_MANUAL"
+      }
+    },
+    "cart": {
+      "totalTransactionAmount": 10000
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4().slice(1,20))
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}

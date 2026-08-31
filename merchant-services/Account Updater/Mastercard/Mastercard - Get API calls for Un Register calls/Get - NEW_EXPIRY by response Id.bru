@@ -1,0 +1,22 @@
+meta {
+  name: Get - NEW_EXPIRY by response Id
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{accountupdater_url}}/account-updates/{{neurrespId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

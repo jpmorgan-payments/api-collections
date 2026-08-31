@@ -1,0 +1,68 @@
+meta {
+  name: Intent Auth Capture Now
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{checkout_url}}/intent
+  body: json
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchant-id}}
+  requestId: {{request-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "currencyCode": "USD",
+    "cart": {
+      "totalTransactionAmount": 1000
+    },
+    "consumer": {
+      "email": "{{$randomEmail}}",
+      "billingAddress": {
+        "recipientFullName": "{{$randomFullName}}",
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "CA",
+        "country": "US",
+        "postalCode": "95000"
+      }
+    },
+    "checkoutOptions": {
+      "authorization": {
+        "authorizationType": "AUTH_METHOD_CART_AMOUNT"
+      },
+      "capture": {
+        "captureMethod": "CAPTURE_METHOD_NOW"
+      },
+      "consumerProfileOptions": {
+        "isSaveConsumerProfile": "false"
+      }
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4().slice(1,20))
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  
+  const moment = require("moment");
+  
+  bru.setEnvVar("timenow", moment().utc().format());
+  
+  bru.setEnvVar("timebefore", moment().utc().subtract(2,'d').format());
+        
+                
+}

@@ -1,0 +1,114 @@
+meta {
+  name: PBL Create Payment Link LPM
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{checkout_url_0}}/payment-links/
+  body: json
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchant-id}}
+  requestId: {{request-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "currencyCode": "EUR",
+    "cart": {
+      "merchantOrderNumber": "{{merchantOrderNumber}}",
+      "lineItems": [
+        {
+          "id": "3",
+          "quantity": 1,
+          "unitPrice": 100,
+          "name": "Headphones",
+          "description": "A light weight, powerful noise cancelling headphones with astonishing sound, and comes with premium design and comfort .",
+          "imageUrl": "https://your-domain.example.com/images/product.jpg"
+        }
+      ],
+      "totalTransactionAmount": 106,
+      "subtotalAmount": {
+        "currencyCode": "EUR",
+        "amount": 100
+      },
+      "totalTax": {
+        "currencyCode": "EUR",
+        "amount": 6
+      },
+      "totalShippingCost": {
+        "currencyCode": "EUR",
+        "amount": 0
+      },
+      "shippingAddress": {
+        "recipientFullName": "{{$randomFullName}}",
+        "line1": "{{$randomStreetAddress}}",
+        "line2": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "NY",
+        "country": "DE",
+        "postalCode": "10017"
+      },
+      "shippingMethods": [
+        {
+          "name": {
+            "translation": [
+              {
+                "text": "Priority shipping",
+                "languageCode": "en-US"
+              }
+            ]
+          },
+          "description": {
+            "translation": [
+              {
+                "text": "1-3 days",
+                "languageCode": "en-US"
+              }
+            ]
+          },
+          "cost": 0,
+          "estimatedDeliveryDate": "2026-08-15T19:29:01.341Z"
+        }
+      ]
+    },
+    "consumer": {
+      "consumerProfileId": "",
+      "email": "{{$randomEmail}}",
+      "phone": "{{$randomPhoneNumber}}",
+      "firstName": "{{$randomFirstName}}"
+    },
+    "checkoutOptions": {
+      "authorization": {
+        "authorizationType": "AUTH_METHOD_CART_AMOUNT"
+      },
+      "capture": {
+        "captureMethod": "CAPTURE_METHOD_NOW"
+      },
+      "consumerProfileOptions": {
+        "isSaveConsumerProfile": "false"
+      },
+      "cookiePolicy": 1
+    },
+    "merchantOrderNumber": "{{merchantOrderNumber}}"
+  }
+}
+
+script:pre-request {
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+tests {
+  // saving link id 
+  if(res.body.link.linkId){
+  bru.setEnvVar("checkout_linkID",res.body.link.linkId);
+  }
+}

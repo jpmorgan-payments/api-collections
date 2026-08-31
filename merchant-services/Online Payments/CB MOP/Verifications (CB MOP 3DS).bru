@@ -1,0 +1,88 @@
+meta {
+  name: Verifications (CB MOP 3DS)
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{online_url}}/verifications
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "currency": "EUR",
+    "initiatorType": "CARDHOLDER",
+    "accountOnFile": "NOT_STORED",
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "{{$randomProduct}}",
+        "version": "2.0"
+      }
+    },
+    "paymentMethodType": {
+      "card": {
+        "accountNumber": "{{cardNum}}",
+        "expiry": {
+          "month": 7,
+          "year": 2023
+        },
+        "cvv": 123,
+        "isBillPayment": true,
+        "authentication": {
+          "SCAExemptionReason": "SECURE_CORPORATE_PAYMENT",
+          "threeDS": {
+            "version2": {
+              "threeDSTransactionStatus": "D"
+            },
+            "initialThreeDSProgramProtocol": "2.2.0",
+            "initialThreeDSAuthenticationAmount": 200,
+            "threeDSChallengeType": "NO_CHALLENGE",
+            "threeDSProgramProtocol": "1",
+            "authenticationTransactionId": "91c122cb-5dfe-4b35-ade0-ae16c1c538ff",
+            "initialThreeDSAuthenticationTimestamp": "{{$isoTimestamp}}"
+          }
+        },
+        "preferredPaymentNetworkRoutingCode": "CB",
+        "preferredRoutingInitiatorCode": "CONSUMER"
+      }
+    },
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "dynamicCVV2Timestamp": "{{$isoTimestamp}}",
+    "accountHolder": {
+      "referenceId": "{{$randomAlphaNumeric}}"
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  // Set transactionId to variable for further use
+  if(res.body.transactionId) {
+  bru.setEnvVar("transactionId", res.body.transactionId);
+  }
+  
+  // Set requestId to variable for further use
+  if(res.body.requestId) {
+  bru.setEnvVar("verificationRequestId", res.body.requestId);
+  }
+}

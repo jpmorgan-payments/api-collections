@@ -1,0 +1,151 @@
+meta {
+  name: Auth-Capture with Orchestrated 3DS
+  type: http
+  seq: 28
+}
+
+post {
+  url: {{online_url}}/payments
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "captureMethod": "NOW",
+    "amount": 3000,
+    "currency": "EUR",
+    "isAmountFinal": true,
+    "initiatorType": "CARDHOLDER",
+    "paymentMethodType": {
+      "card": {
+        "accountNumber": "{{cardNum}}",
+        "expiry": {
+          "month": 5,
+          "year": 2040
+        },
+        "cvv": "123",
+        "paymentAuthenticationRequest": {
+          "authenticationReturnUrl": "https://your-merchant-domain.example.com/3ds/authentication-return",
+          "authenticationSupportUrl": "https://your-merchant-domain.example.com/3ds/authentication-support",
+          "threeDSAccountAdditionalInfo": {
+            "consumerAccountCreateLength": "NO_ACCOUNT",
+            "consumerAccountCreateTimestamp": "{{$isoTimestamp}}",
+            "consumerAccountUpdateLength": "CURRENT_TXN",
+            "consumerAccountUpdateTimestamp": "{{$isoTimestamp}}",
+            "consumerAccountPasswordUpdateTimestamp": "{{$isoTimestamp}}",
+            "consumerAccountPasswordChangeLength": "NO_CHANGE",
+            "consumerAccountShippingAddressLength": "CURRENT_TXN_CHANGE",
+            "consumerAccountFirstShippingDate": "{{$isoTimestamp}}",
+            "twentyFourHoursTransactionCount": 0,
+            "previousYearTransactionCount": 0,
+            "consumerAccount24HoursAddCardCount": 0,
+            "sixMonthTransactionCount": 0,
+            "consumerAccountSuspiciousActivityIndicator": true,
+            "consumerAccountShipNameIdenticalIndicator": true,
+            "consumerPaymentAccountLength": "NO_ACCOUNT",
+            "consumerPaymentAccountEnrollmentDate": "{{$isoTimestamp}}",
+            "consumerAccountAddressIdenticalIndicator": true
+          },
+          "threeDSRequestorAuthenticationInfo": {
+            "threeDSAuthenticationTimestamp": "{{$isoTimestamp}}",
+            "threeDSAuthenticationData": "",
+            "threeDSChallengeType": "NO_CHALLENGE",
+            "requestorAuthenticationMethod": "REQUESTOR_CRED",
+            "authenticationPurpose": "PAYMENT_TRANSACTION"
+          },
+          "threeDSRequestorPriorAuthenticationInfo": {
+            "priorAcsTransactionId": "CCGXpZvTlCmBUyPnnZfmsGDKqxRsRwPovkAE",
+            "authenticationMethod": "FRICTIONLESS"
+          },
+          "threeDSPurchaseInfo": {
+            "purchaseDate": "{{$isoTimestamp}}",
+            "recurringAuthorizationDayCount": 0,
+            "threeDomainSecureTransactionType": "CHECK"
+          },
+          "threeDSPurchaseRisk": {
+            "shipmentType": "CARDHOLDER_ADDRESS",
+            "deliveryTimeframe": "SAME_DAY",
+            "orderEmailAddress": "",
+            "productRepurchaseIndicator": true,
+            "productAvailabilityCode": "AVAILABLE",
+            "preOrderDate": "{{$isoTimestamp}}",
+            "purchasedPrepaidCardTotalAmount": 0,
+            "purchasedPrepaidCardCount": 0,
+            "prepaidCardCurrency": "USD"
+          }
+        }
+      }
+    },
+    "accountHolder": {
+      "firstName": "{{$randomFirstName}}",
+      "lastName": "{{$randomLastName}}",
+      "email": "{{$randomEmail}}",
+      "mobile": {
+        "countryCode": 1,
+        "phoneNumber": "8888888888"
+      },
+      "phone": {
+        "countryCode": 1,
+        "phoneNumber": "8888888888"
+      },
+      "billingAddress": {
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "{{$randomCountryCode}}",
+        "countryCode": "USA",
+        "postalCode": "33626"
+      }
+    },
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "{{$randomProduct}}",
+        "version": "2.0"
+      }
+    },
+    "browserInfo": {
+      "browserAcceptHeader": "application/json",
+      "deviceIPAddress": "{{$randomIPV4}}",
+      "browserLanguage": "en",
+      "browserColorDepth": "8",
+      "browserScreenHeight": "1",
+      "browserScreenWidth": "1",
+      "deviceLocalTimeZone": 1,
+      "browserUserAgent": "{{$randomUserAgent}}",
+      "challengeWindowSize": "250_400",
+      "javaEnabled": true,
+      "javaScriptEnabled": true
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  // Set transactionId to variable for further use
+  if(res.body.transactionId) {
+  bru.setEnvVar("transactionId", res.body.transactionId);
+  }
+  
+  // Set requestId to variable for further use
+  if(res.body.requestId) {
+  bru.setEnvVar("authRequestId", res.body.requestId);
+  }
+}

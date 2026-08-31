@@ -1,0 +1,82 @@
+meta {
+  name: Create Profile (ACH)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{consumerprofile_url}}/consumer-profiles
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  requestIdentifier: {{request-id}}
+  merchantIdentifier: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "externalConsumerProfileIdentifier": "{{merchantOrderNumber}}",
+    "cardOnFileReferenceNumber": "123",
+    "firstName": "{{$randomFirstName}}",
+    "lastName": "{{$randomLastName}}",
+    "profileStatus": "ACTIVE",
+    "consumerProfileAddresses": [
+      {
+        "firstName": "{{$randomFirstName}}",
+        "lastName": "{{$randomLastName}}",
+        "consumerAssignedAddressName": "Work",
+        "primaryAddressIndicator": true,
+        "addressType": "SHIPPING",
+        "line1": "400 Elton Farm",
+        "line2": "Apt 123",
+        "city": "Glen Mills",
+        "state": "PA",
+        "postalCode": "19342",
+        "countryCode": "USA",
+        "addressStatus": "ACTIVE"
+      }
+    ],
+    "profilePaymentMethod": {
+      "achList": [
+        {
+          "accountNumber": "0888271156",
+          "financialInstitutionRoutingNumber": "122000247",
+          "paymentType": "WEB",
+          "accountStatus": "ACTIVE",
+          "firstName": "{{$randomFirstName}}",
+          "lastName": "{{$randomLastName}}"
+        }
+      ]
+    },
+    "communication": {
+      "phoneList": [
+        {
+          "phoneNumber": "8888888888",
+          "countryCode": "840",
+          "phoneNumberType": "Home"
+        }
+      ],
+      "emailList": [
+        {
+          "emailAddress": "{{$randomEmail}}",
+          "emailAddressType": "Home"
+        }
+      ]
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}

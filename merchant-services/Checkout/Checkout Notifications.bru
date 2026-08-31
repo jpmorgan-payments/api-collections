@@ -1,0 +1,45 @@
+meta {
+  name: Checkout Notifications
+  type: http
+  seq: 17
+}
+
+get {
+  url: {{checkout_url}}/notifications?merchantOrderNumber={{merchantOrderNumber}}&periodStart={{timebefore}}&periodEnd={{timenow}}
+  body: json
+  auth: inherit
+}
+
+params:query {
+  merchantOrderNumber: {{merchantOrderNumber}}
+  periodStart: {{timebefore}}
+  periodEnd: {{timenow}}
+}
+
+headers {
+  merchantId: {{merchant-id}}
+  requestId: {{request-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4().slice(1,20))
+  
+  const moment = require("moment");
+  
+  // Get the current time in UTC format
+  const timenow = moment().utc().format();
+  
+  // Set the environment variable for the current time
+  bru.setEnvVar("timenow", timenow);
+  
+  // Calculate the time one day before the current time
+  const timebefore = moment().utc().subtract(29, 'days').format();
+  
+  // Set the environment variable for the time one day before
+  bru.setEnvVar("timebefore", timebefore);
+}

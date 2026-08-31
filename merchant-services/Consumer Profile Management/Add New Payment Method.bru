@@ -1,0 +1,93 @@
+meta {
+  name: Add New Payment Method
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{consumerprofile_url}}/consumer-profiles/{{consumerprofileid}}/payment-methods
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  requestIdentifier: {{request-id}}
+  merchantIdentifier: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "cardList": [
+      {
+        "cardExpirationMonthYearNumber": "02/2028",
+        "accountNumber": "{{cardNum}}",
+        "accountStatus": "ACTIVE",
+        "cardType": "DI",
+        "firstName": "{{$randomFirstName}}",
+        "lastName": "{{$randomLastName}}",
+        "consumerProfileAddress": {
+          "firstName": "{{$randomFirstName}}",
+          "lastName": "{{$randomLastName}}",
+          "consumerAssignedAddressName": "Work",
+          "primaryAddressIndicator": true,
+          "addressType": "BILLING",
+          "line1": "400 Elton Farm",
+          "line2": "Apt 123",
+          "city": "Glen Mills",
+          "state": "PA",
+          "postalCode": "19342",
+          "countryCode": "USA",
+          "addressStatus": "ACTIVE"
+        }
+      }
+    ]
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+tests {
+  
+  // Set consumer profile id to variable for further use
+  if(res.body.consumerProfileId) {
+  bru.setEnvVar("consumerprofileid", res.body.consumerProfileId);
+  }
+  
+  // Set consumer profile address to variable for further use
+  
+  if(Array.isArray(res.body.addresses) && res.body.addresses.length > 0)
+  {
+  var firstelement = res.body.addresses[1].addressIdentifier;
+  bru.setEnvVar("consumerprofileaddressid",JSON.stringify(firstelement));
+  let ogvalue = bru.getEnvVar("consumerprofileaddressid");
+  let modvalue = ogvalue.replace(/"/g,'');
+  bru.setEnvVar("consumerprofileaddressid",modvalue);
+  }
+  
+  
+  // Set default payment method ID to variable for further use
+  if(res.body.paymentMethodType.defaultMOP.card.paymentMethodId) {
+  bru.setEnvVar("consumerprofilepymntID", res.body.paymentMethodType.defaultMOP.card.paymentMethodId);
+  }
+  
+  // Set new payment method ID to variable for further use
+  if(Array.isArray(res.body.paymentMethodType.cardList) && res.body.paymentMethodType.cardList.length > 0)
+  {
+  var f1element = res.body.paymentMethodType.cardList[0].paymentMethodId;
+  bru.setEnvVar("consumerprofilepymntID2",JSON.stringify(f1element));
+  let og1value = bru.getEnvVar("consumerprofilepymntID2");
+  let mod1value = og1value.replace(/"/g,'');
+  bru.setEnvVar("consumerprofilepymntID2",mod1value);
+  }
+}

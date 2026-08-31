@@ -1,0 +1,21 @@
+meta {
+  name: Get Payment Details by TxID
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{online_url}}/verifications/{{transactionId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  merchant-id: {{merchant-id}}
+  ~request-id: {{request-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}

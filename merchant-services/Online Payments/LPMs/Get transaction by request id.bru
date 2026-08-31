@@ -1,0 +1,25 @@
+meta {
+  name: Get transaction by request id
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{online_url}}/payments?requestIdentifier={{authLPMRequestId}}
+  body: json
+  auth: inherit
+}
+
+params:query {
+  requestIdentifier: {{authLPMRequestId}}
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}

@@ -1,0 +1,50 @@
+meta {
+  name: Token Request (Safetech)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{token_url}}/acquirerToken
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "accountInformation": {
+      "cardNumber": "{{cardNum}}",
+      "cardSource": "KEY_ENTERED"
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+tests {
+  // Set tokenNumber to variable for further use
+  if(res.body.tokenInformation.acquirerTokenNumber){
+  bru.setEnvVar("tokenNumber",res.body.tokenInformation.acquirerTokenNumber);
+  }
+  
+  // Set token reference ID to variable for further use
+  if(res.body.identifier){
+  bru.setEnvVar("tokenReferenceIdentifier",res.body.identifier);
+  }
+}

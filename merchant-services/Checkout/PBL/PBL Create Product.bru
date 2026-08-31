@@ -1,0 +1,43 @@
+meta {
+  name: PBL Create Product
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{checkout_url_0}}/catalog/products/
+  body: json
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchant-id}}
+  requestId: {{request-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+      "name": "{{$randomProductName}}",
+      "sku": "SKU-{{$randomAlphaNumeric}}{{$randomAlphaNumeric}}{{$randomAlphaNumeric}}{{$randomAlphaNumeric}}{{$randomAlphaNumeric}}{{$randomAlphaNumeric}}",
+      "description": "Product Desc {{$randomLoremSentence}}"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+tests {
+  //Saving the product id in a variable
+  if(res.body.product.productId){
+  bru.setEnvVar("checkout_productID",res.body.product.productId);
+  }
+}

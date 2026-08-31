@@ -1,0 +1,110 @@
+meta {
+  name: Auth-Capture (CB MOP 3DS)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{online_url}}/payments
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "captureMethod": "NOW",
+    "amount": 5000,
+    "currency": "EUR",
+    "initiatorType": "CARDHOLDER",
+    "accountOnFile": "NOT_STORED",
+    "isAmountFinal": true,
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "{{$randomProduct}}",
+        "version": "2.0"
+      }
+    },
+    "paymentMethodType": {
+      "card": {
+        "accountNumber": "{{cardNum}}",
+        "expiry": {
+          "month": 12,
+          "year": 2030
+        },
+        "cvv": 480,
+        "isBillPayment": true,
+        "authentication": {
+          "SCAExemptionReason": "SECURE_CORPORATE_PAYMENT",
+          "threeDS": {
+            "version2": {
+              "threeDSTransactionStatus": "D"
+            },
+            "authenticationValueCalculationMethod": "0",
+            "initialThreeDSProgramProtocol": "2",
+            "initialThreeDSAuthenticationAmount": 200,
+            "threeDSChallengeType": "NO_CHALLENGE",
+            "threeDSProgramProtocol": "2.0.1",
+            "authenticationTransactionId": "{{request-id}}"
+          }
+        },
+        "preferredPaymentNetworkRoutingCode": "CB",
+        "preferredRoutingInitiatorCode": "CONSUMER",
+        "paymentAuthenticationRequest": {
+          "threeDSRequestorAuthenticationInfo": {
+            "threeDSAuthenticationTimestamp": "{{$isoTimestamp}}",
+            "authenticationPurpose": "INSTALLMENT_TRANSACTION"
+          },
+          "threeDSRequestorPriorAuthenticationInfo": {
+            "authenticationMethod": "FRICTIONLESS"
+          }
+        }
+      }
+    },
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "dynamicCVV2Timestamp": "{{$isoTimestamp}}",
+    "accountHolder": {
+      "referenceId": "{{$randomAlphaNumeric}}"
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  // Set transactionId to variable for further use
+  if(res.body.transactionId) {
+  bru.setEnvVar("transactionId", res.body.transactionId);
+  }
+  
+  // Set requestId to variable for further use
+  if(res.body.requestId) {
+  bru.setEnvVar("authRequestId", res.body.requestId);
+  }
+  
+  // Set 3dsAuthTransactionId to variable for further use
+  if(res.body.paymentMethodType.card.authentication.threeDS.authenticationTransactionId) {
+  bru.setEnvVar("3dsAuthTransactionId", res.body.paymentMethodType.card.authentication.threeDS.authenticationTransactionId);
+  }
+  
+  // Set networkTransactionId to variable for further use
+  if(res.body.paymentMethodType.card.networkResponse.networkTransactionId) {
+  bru.setEnvVar("networkTransactionId", res.body.paymentMethodType.card.networkResponse.networkTransactionId);
+  }
+}

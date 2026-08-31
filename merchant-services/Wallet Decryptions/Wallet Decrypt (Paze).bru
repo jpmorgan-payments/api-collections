@@ -1,0 +1,33 @@
+meta {
+  name: Wallet Decrypt (Paze)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{online_url}}/wallet-decryptions
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "encryptedPayloadText": "IwMUZxaGpIZmhQQ3NibEswTXQ4WExNQ1ZRMGtOS21DX2ZHRllybkFRjRTUldJT2t6SkRWcHJzdlctNERYYThUUGl5YUR1cEN4TGEwaHFyaHBuYktlelctZGM2dzFkcWFVWFIzTmtvNjF3S3lJLkpVRHN1SXNFQnRxZGFPUlc1ZDBTSFEifQ.BUuxJn2DWV2His9s7gpOqp7-NQFSlrpPGzIzA7pDZO2BJ1bx4Zwv18N0aYkd10OB5SRFk3WLo6O_GcKaCZT3RfES0kOLY93SAAA1k1s0Uo-gnI-HBLFmgqr0lvtrlVUESnGefyjROrmYb3nVGC9YgaztuJWIHrk8PrPWb0SgGMDhroQ-oXH6Z3uvP6A5RyVmSpgWkCJuKKACKkEDm87ZJygNf8HrF1wz4cEiJzKwsym_JhfUAVIuGbM3HD9jEhLF0ms3HRkV0xR_0TQvlMVw6zApZ3BCDClbHP4hoA_buPn8z0IGZhe7KsOC-TwxHtkHy8zaoQ9b_vEdONXRT_fLNA",
+    "walletProvider": "PAZE"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+}

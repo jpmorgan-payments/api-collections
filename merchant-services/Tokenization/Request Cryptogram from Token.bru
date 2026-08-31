@@ -1,0 +1,83 @@
+meta {
+  name: Request Cryptogram from Token
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{token_url}}/cryptograms
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "paymentOrder": {
+      "amounts": {
+        "amount": 1234,
+        "currency": "USD"
+      },
+      "device": {
+        "deviceType": "PHONE",
+        "deviceIPAddress": "192.168.1.78",
+        "deviceLocale": "en-US",
+        "deviceLatLong": "40, -73",
+        "deviceMake": "Samsung",
+        "deviceOS": "ANDROID",
+        "deviceOsVersion": "12.0",
+        "digitalDeviceIdentifier": "ahd896384d",
+        "deviceGeoLocationCaptureTimestamp": "2026-09-08T21:01:20.945Z",
+        "deviceName": "Samsung_Android",
+        "walletId": "123"
+      },
+      "initiatedBy": "CARDHOLDER",
+      "transactionType": "ECOMMERCE"
+    },
+    "paymentInstrument": {
+      "accountholderName": "Jane Doe",
+      "tokenReferenceIdentifier": "{{tokenReferenceIdentifier}}",
+      "tokenNumber": "{{tokenNumber}}",
+      "electronicCommerceIndicator": "02",
+      "expiry": {
+        "month": 12,
+        "year": 2027
+      }
+    },
+    "tokenCryptogramType": "TAVV"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+tests {
+  // Set transactionId to variable for further use
+  if(res.body.transactionId) {
+  bru.setEnvVar("transactionId", res.body.transactionId);
+  }
+  
+  // Set token authentication value to variable for further use
+  if(res.body.paymentInstrument.tokenAuthenticationValue){
+  bru.setEnvVar("tokenAuthenticationValue",res.body.paymentInstrument.tokenAuthenticationValue);
+  }
+  
+  // Set cryptogram to variable for further use
+  if(res.body.paymentInstrument.tokenNumber){
+  bru.setEnvVar("cryptogramfromtoken",res.body.paymentInstrument.tokenNumber);
+  }
+}

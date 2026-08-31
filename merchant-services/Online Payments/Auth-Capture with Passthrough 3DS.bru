@@ -1,0 +1,75 @@
+meta {
+  name: Auth-Capture with Passthrough 3DS
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{online_url}}/payments
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+body:json {
+  {
+    "captureMethod": "NOW",
+    "amount": 54500,
+    "currency": "EUR",
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "{{$randomProduct}}",
+        "version": "2.0"
+      }
+    },
+    "paymentMethodType": {
+      "card": {
+        "accountNumber": "{{cardNum}}",
+        "expiry": {
+          "month": 5,
+          "year": 2027
+        },
+        "cvv": 123,
+        "authentication": {
+          "threeDS": {
+            "authenticationTransactionId": "{{3dsauthid}}",
+            "authenticationValue": "JAcc21makAifmwqo2120cjq1AAA="
+          },
+          "electronicCommerceIndicator": "05"
+        }
+      }
+    },
+    "accountHolder": {
+      "fullName": "{{$randomFullName}}",
+      "billingAddress": {
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "{{$randomCountryCode}}",
+        "postalCode": "33626"
+      }
+    },
+    "initiatorType": "CARDHOLDER",
+    "accountOnFile": "NOT_STORED",
+    "isAmountFinal": true
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

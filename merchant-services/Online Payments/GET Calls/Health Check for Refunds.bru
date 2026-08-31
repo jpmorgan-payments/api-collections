@@ -1,0 +1,21 @@
+meta {
+  name: Health Check for Refunds
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{online_url}}/healthcheck/refunds
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}

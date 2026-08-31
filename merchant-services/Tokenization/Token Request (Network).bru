@@ -1,0 +1,111 @@
+meta {
+  name: Token Request (Network)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{token_url}}/tokens
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "device": {
+      "deviceType": "PHONE",
+      "deviceIPAddress": "127.0.0.1",
+      "deviceLocale": "en-US",
+      "deviceLatLong": "40, -73",
+      "deviceMake": "Samsung",
+      "deviceOS": "ANDROID",
+      "deviceOsVersion": "12",
+      "digitalDeviceIdentifier": "ahd896384d",
+      "deviceGeoLocationCaptureTimestamp": "2026-09-08T21:01:20.945Z",
+      "deviceName": "Samsung_Android",
+      "walletId": "123"
+    },
+    "accountInformation": {
+      "accountholderName": "John Doe",
+      "accountholderEmail": "{{$randomEmail}}",
+      "accountType": "GUEST",
+      "accountHolderReference": "e5ad0fd0-4f92-4df",
+      "cardNumber": "{{cardNum}}",
+      "billingAddress": {
+        "addressLine1": "7825 N MacArthur Blvd",
+        "addressLine2": "Lewisville Mall",
+        "city": "Irving",
+        "stateProvince": "TX",
+        "postalCode": "72638",
+        "countryCode": "US"
+      },
+      "cardExpiry": {
+        "month": 11,
+        "year": 2027
+      },
+      "cardSource": "KEY_ENTERED",
+      "cardVerificationNumber": "325"
+    },
+    "riskInformation": {
+      "walletRisk": {
+        "walletScore": 15,
+        "walletUsageLength": 94,
+        "walletTransactions": 35,
+        "walletNameMatch": true
+      },
+      "cardRisk": {
+        "cardScore": 23,
+        "cardUsageLength": 249
+      },
+      "deviceRisk": {
+        "deviceScore": 19,
+        "deviceUsageLength": 193,
+        "deviceTokenCount": 2,
+        "deviceCountry": "US"
+      },
+      "userRisk": {
+        "userScore": 38,
+        "userUsageLength": 49,
+        "userTokenCount": 2,
+        "userWalletCount": 1,
+        "userCountry": "US",
+        "newUserAccount": false,
+        "onFileTime": 37
+      }
+    },
+    "presentationModes": [
+      "ECOM"
+    ],
+    "recommendationPath": "APPROVED"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+tests {
+  // Set tokenNumber to variable for further use
+  if(res.body.tokenInformation.tokenNumber){
+  bru.setEnvVar("tokenNumber",res.body.tokenInformation.tokenNumber);
+  }
+  
+  // Set token reference ID to variable for further use
+  if(res.body.tokenInformation.tokenReferenceIdentifier){
+  bru.setEnvVar("tokenReferenceIdentifier",res.body.tokenInformation.tokenReferenceIdentifier);
+  }
+}

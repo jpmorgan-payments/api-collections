@@ -1,0 +1,21 @@
+meta {
+  name: Health Check for Verifications
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{online_url}}/healthcheck/verifications
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}

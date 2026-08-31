@@ -1,0 +1,184 @@
+meta {
+  name: Intent (Level 3 Example 4)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{checkout_url}}/intent
+  body: json
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchant-id}}
+  requestId: {{request-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "currencyCode": "USD",
+    "cart": {
+      "totalTransactionAmount": 3000,
+      "taxAmount": 1500,
+      "transactionDiscountAmount": 500,
+      "taxes": [
+        {
+          "taxTypeCode": "TAX_TYPE_SHIPPING_VAT_TAX",
+          "taxTypeDescription": "tax desc",
+          "taxMode": "RATE_MODE_PERCENTAGE",
+          "taxPercent": 10,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        },
+        {
+          "taxTypeCode": "TAX_TYPE_SHIPPING_VAT_TAX",
+          "taxTypeDescription": "tax desc",
+          "taxMode": "RATE_MODE_FLAT",
+          "taxAmount": 250,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        },
+        {
+          "taxTypeCode": "TAX_TYPE_VAT",
+          "taxTypeDescription": "tax desc",
+          "taxMode": "RATE_MODE_PERCENTAGE",
+          "taxPercent": 10,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        },
+        {
+          "taxTypeCode": "TAX_TYPE_VAT",
+          "taxTypeDescription": "tax desc",
+          "taxMode": "RATE_MODE_FLAT",
+          "taxAmount": 250,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        },
+        {
+          "taxTypeCode": "TAX_TYPE_ALTERNATE_TAX",
+          "taxTypeDescription": "tax desc",
+          "taxMode": "RATE_MODE_FLAT",
+          "taxAmount": 250,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        },
+        {
+          "taxTypeCode": "TAX_TYPE_IMPORT_TAX",
+          "taxTypeDescription": "tax desc",
+          "taxMode": "RATE_MODE_FLAT",
+          "taxAmount": 150,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        }
+      ],
+      "transactionAdvices": [
+        "TXN_01",
+        "TXN_02"
+      ],
+      "totalShippingAmount": "100",
+      "taxTreatmentCode": "TTC",
+      "lineItems": [
+        {
+          "id": "{{merchantOrderNumber}}_01",
+          "quantity": 1,
+          "unitPrice": 1000,
+          "name": "Men's Casual Shirt",
+          "description": "A comfortable and stylish shirt for everyday wear",
+          "imageUrl": "https://your-domain.example.com/images/product.jpg",
+          "taxable": true,
+          "shippable": true,
+          "taxInclusiveLineItemTotalAmount": 1500,
+          "transactionDiscountAmount": 200,
+          "totalTaxAmount": 400,
+          "taxes": [
+            {
+              "taxTypeCode": "TAX_TYPE_STATE_SALES_TAX",
+              "taxTypeDescription": "tax desc",
+              "taxMode": "RATE_MODE_FLAT",
+              "taxAmount": 250,
+              "partyTaxGovernmentIssuedIdentifier": "pt01"
+            },
+            {
+              "taxTypeCode": "TAX_TYPE_STATE_SALES_TAX",
+              "taxTypeDescription": "tax desc",
+              "taxMode": "RATE_MODE_PERCENTAGE",
+              "taxPercent": 10,
+              "partyTaxGovernmentIssuedIdentifier": "pt01"
+            }
+          ],
+          "shippingAddress": {
+            "recipientFullName": "{{$randomFullName}}",
+            "line1": "{{$randomStreetAddress}}",
+            "city": "{{$randomCity}}",
+            "state": "NY",
+            "country": "US",
+            "postalCode": "12345"
+          }
+        },
+        {
+          "id": "{{merchantOrderNumber}}_02",
+          "quantity": 1,
+          "unitPrice": 1000,
+          "name": "Men's Casual Shirt",
+          "description": "A comfortable and stylish shirt for everyday wear",
+          "imageUrl": "https://your-domain.example.com/images/product.jpg",
+          "taxable": true,
+          "shippable": true,
+          "taxInclusiveLineItemTotalAmount": 1500,
+          "transactionDiscountAmount": 200,
+          "totalTaxAmount": 400,
+          "shippingAddress": {
+            "recipientFullName": "{{$randomFullName}}",
+            "line1": "{{$randomStreetAddress}}",
+            "city": "{{$randomCity}}",
+            "state": "NY",
+            "country": "US",
+            "postalCode": "12345"
+          }
+        }
+      ],
+      "shippingAddress": {
+        "recipientFullName": "{{$randomFullName}}",
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "CA",
+        "country": "US",
+        "postalCode": "95111"
+      },
+      "shipFromAddressPostalCode": "95111"
+    },
+    "consumer": {
+      "email": "{{$randomEmail}}",
+      "billingAddress": {
+        "recipientFullName": "{{$randomFullName}}",
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "CA",
+        "country": "US",
+        "postalCode": "95111"
+      }
+    },
+    "checkoutOptions": {
+      "authorization": {
+        "authorizationType": "AUTH_METHOD_CART_AMOUNT"
+      },
+      "capture": {
+        "captureMethod": "CAPTURE_METHOD_NOW"
+      },
+      "consumerProfileOptions": {
+        "isSaveConsumerProfile": "false"
+      }
+    },
+    "purchaseOrderNumber": "{{merchantOrderNumber}}",
+    "merchantSalesChannelName": "ORDER_CHANNEL_TYPE_WEB",
+    "orderDate": "2027-05-08"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4().slice(1,20))
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}

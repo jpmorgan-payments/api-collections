@@ -1,0 +1,25 @@
+meta {
+  name: Get Auth Details by RequestID
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{online_url}}/payments?requestIdentifier={{authRequestId}}
+  body: json
+  auth: inherit
+}
+
+params:query {
+  requestIdentifier: {{authRequestId}}
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}

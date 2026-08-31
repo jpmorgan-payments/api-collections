@@ -1,0 +1,38 @@
+meta {
+  name: Change Token Lifecycle
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{token_url}}/tokens/{{tokenReferenceIdentifier}}/lifecycle-states
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "paymentInstrument": {
+      "lifecycleManagementAction": {
+        "stateChangeReason": "DELETE",
+        "stateChangeReasonText": "Consumer suspended subscription"
+      }
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+}

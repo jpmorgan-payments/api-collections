@@ -1,0 +1,22 @@
+meta {
+  name: Get - NEW_ACCOUNT_AND_EXPIRY_Override by request Id
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{accountupdater_url}}/account-updates/{{naeootqreqId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

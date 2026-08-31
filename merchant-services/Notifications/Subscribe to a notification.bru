@@ -1,0 +1,80 @@
+meta {
+  name: Subscribe to a notification
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{notifications_url}}/subscriptions
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+  entity-type: MERCHANT
+  entity-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "notifications": {
+      "reportStatusNotification": [
+        "DailyCompleted"
+      ],
+      "accountUpdateNotification": [
+        "AccountClosed",
+        "AccountCreated"
+      ],
+      "tokenLifecycleNotification": [
+        "TokenStateChange",
+        "CardDetailsUpdate"
+      ],
+      "accountInformationServiceNotification": [
+        "ConsentLinkInitiated",
+        "ConsentLinkSuccessful"
+      ],
+      "disputeNotification": [
+        "DisputeClosed"
+      ],
+      "paymentUpdateNotification": [
+        "PaymentApproved",
+        "PaymentClosed"
+      ]
+    },
+    "subscriptionChannels": [
+      "WEBHOOK"
+    ],
+    "callbackURL": "https://your-merchant-domain.example.com/notifications",
+    "securityPreferences": {
+      "webhookAuthorizationType": "token",
+      "tokenEndpointAuthorizationType": "client_certificate_post",
+      "mTLSEnabled": false,
+      "authorizationDetails": {
+        "tokenEndpoint": "https://idag2.jpmorganchase.com/adfs/oauth2/token/",
+        "resourceId": "<YOUR_RESOURCE_ID>"
+      }
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+tests {
+  // Set subscriptionId to variable for further use
+  if(res.body.subscriptionId) {
+  bru.setEnvVar("subscriptionId", res.body.subscriptionId);
+  }
+}

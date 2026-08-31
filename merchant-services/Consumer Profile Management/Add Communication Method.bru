@@ -1,0 +1,97 @@
+meta {
+  name: Add Communication Method
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{consumerprofile_url}}/consumer-profiles/{{consumerprofileid}}/communication
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  requestIdentifier: {{request-id}}
+  merchantIdentifier: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "phoneList": [
+      {
+        "phoneNumber": "8888888888",
+        "countryCode": "840",
+        "phoneNumberType": "Home"
+      }
+    ],
+    "emailList": [
+      {
+        "emailAddress": "{{$randomEmail}}",
+        "emailAddressType": "Home"
+      }
+    ]
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+tests {
+  // Set consumer profile id to variable for further use
+  if(res.body.consumerProfileId) {
+  bru.setEnvVar("consumerprofileid", res.body.consumerProfileId);
+  }
+  
+  // Set consumer profile address to variable for further use
+  
+  if(Array.isArray(res.body.addresses) && res.body.addresses.length > 0)
+  {
+  var firstelement = res.body.addresses[1].addressIdentifier;
+  bru.setEnvVar("consumerprofileaddressid",JSON.stringify(firstelement));
+  let ogvalue = bru.getEnvVar("consumerprofileaddressid");
+  let modvalue = ogvalue.replace(/"/g,'');
+  bru.setEnvVar("consumerprofileaddressid",modvalue);
+  }
+  
+  // Set default payment method ID to variable for further use
+  if(res.body.paymentMethodType.defaultMOP.card.paymentMethodId) {
+  bru.setEnvVar("consumerprofilepymntID", res.body.paymentMethodType.defaultMOP.card.paymentMethodId);
+  }
+  
+  
+  // Set phone communication ID to variable for further use
+  
+  if(Array.isArray(res.body.communication.phoneList) && res.body.communication.phoneList.length > 0)
+  {
+  var secondelement = res.body.communication.phoneList[1].communicationIdentifier;
+  bru.setEnvVar("consumerprofilecomphoneid",JSON.stringify(secondelement));
+  let og1value = bru.getEnvVar("consumerprofilecomphoneid");
+  let mod1value = og1value.replace(/"/g,'');
+  bru.setEnvVar("consumerprofilecomphoneid",mod1value);
+  }
+  
+  
+  // Set email communication ID to variable for further use
+  
+  if(Array.isArray(res.body.communication.emailList) && res.body.communication.emailList.length > 0)
+  {
+  var second2element = res.body.communication.emailList[1].communicationIdentifier;
+  bru.setEnvVar("consumerprofilecomemailid",JSON.stringify(second2element));
+  let og3value = bru.getEnvVar("consumerprofilecomemailid");
+  let mod3value = og3value.replace(/"/g,'');
+  bru.setEnvVar("consumerprofilecomemailid",mod3value);
+  }
+  
+  
+  
+}

@@ -1,0 +1,22 @@
+meta {
+  name: Get - CLOSED_ACCOUNT by request Id
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{accountupdater_url}}/account-updates/{{careqId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

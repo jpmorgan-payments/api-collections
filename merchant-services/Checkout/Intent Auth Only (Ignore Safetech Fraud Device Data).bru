@@ -1,0 +1,50 @@
+meta {
+  name: Intent Auth Only (Ignore Safetech Fraud Device Data)
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{checkout_url}}/intent
+  body: json
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchant-id}}
+  requestId: {{request-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "currencyCode": "USD",
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "checkoutOptions": {
+      "authorization": {
+        "authorizationType": "AUTH_METHOD_CART_AMOUNT"
+      },
+      "capture": {
+        "captureMethod": "CAPTURE_METHOD_MANUAL"
+      },
+      "fraudCheckOptions": {
+        "ignoreDeviceData": true,
+        "consumerCreateTimestamp": "{{$isoTimestamp}}"
+      }
+    },
+    "cart": {
+      "totalTransactionAmount": 1000
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4().slice(1,20))
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}

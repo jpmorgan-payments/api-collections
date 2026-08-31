@@ -1,0 +1,106 @@
+meta {
+  name: Auth-Capture (Level2 MC)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{online_url}}/payments
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "captureMethod": "NOW",
+    "amount": "10000",
+    "currency": "USD",
+    "initiatorType": "CARDHOLDER",
+    "accountOnFile": "NOT_STORED",
+    "paymentMethodType": {
+      "card": {
+        "accountNumber": "{{cardNum}}",
+        "expiry": {
+          "month": "12",
+          "year": "2030"
+        },
+        "merchantSalesChannelName": "INTERNET"
+      }
+    },
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "{{$randomProduct}}"
+      }
+    },
+    "accountHolder": {
+      "billingAddress": {
+        "line1": "{{$randomStreetAddress}}",
+        "line2": "{{$randomStreetAddress}}",
+        "state": "{{$randomCountryCode}}",
+        "city": "{{$randomCity}}",
+        "postalCode": "94566",
+        "countryCode": "USA"
+      },
+      "firstName": "{{$randomFirstName}}",
+      "lastName": "{{$randomLastName}}",
+      "email": "{{$randomEmail}}",
+      "middleName": "{{$randomLastName}}",
+      "phone": {
+        "phoneNumber": "8888888888"
+      }
+    },
+    "shipTo": {
+      "firstName": "{{$randomFirstName}}",
+      "shippingAddress": {
+        "line1": "{{$randomStreetAddress}}",
+        "line2": "{{$randomStreetAddress}}",
+        "state": "{{$randomCountryCode}}",
+        "city": "{{$randomCity}}"
+      },
+      "phone": {
+        "phoneNumber": "8888888888"
+      },
+      "middleName": "{{$randomLastName}}",
+      "lastName": "{{$randomLastName}}",
+      "email": "{{$randomEmail}}"
+    },
+    "retailAddenda": {
+      "purchaseOrderNumber": "{{merchantOrderNumber}}",
+      "isTaxable": true,
+      "taxAmount": 1000
+    },
+    "isAmountFinal": true,
+    "merchantOrderNumber": "{{merchantOrderNumber}}"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  // Set transactionId to variable for further use
+  if(res.body.transactionId) {
+  bru.setEnvVar("transactionId", res.body.transactionId);
+  }
+  
+  // Set requestId to variable for further use
+  if(res.body.requestId) {
+  bru.setEnvVar("authRequestId", res.body.requestId);
+  }
+}

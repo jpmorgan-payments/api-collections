@@ -1,0 +1,20 @@
+meta {
+  name: Checkout Health Check
+  type: http
+  seq: 18
+}
+
+get {
+  url: {{checkout_url}}/healthcheck
+  body: none
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchant-id}}
+  requestId: {{request-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}

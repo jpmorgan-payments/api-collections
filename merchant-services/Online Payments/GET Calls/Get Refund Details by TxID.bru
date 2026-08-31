@@ -1,0 +1,21 @@
+meta {
+  name: Get Refund Details by TxID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{online_url}}/refunds/{{transactionId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}

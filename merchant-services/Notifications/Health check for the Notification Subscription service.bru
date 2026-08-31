@@ -1,0 +1,35 @@
+meta {
+  name: Health check for the Notification Subscription service
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{notifications_url}}/healthcheck/notification-subscriptions
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+  ~entity-type: MERCHANT
+  ~entity-id: {{merchant-id}}
+  ~subscription-channel: WEBHOOK
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  
+  // Generate notification id and store it in a variable
+  bru.setEnvVar("notification-id", require("uuid").v4());
+}

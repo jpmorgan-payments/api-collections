@@ -1,0 +1,22 @@
+meta {
+  name: Get - CONTACT_CARDHOLDER by response Id
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{accountupdater_url}}/account-updates/{{ccotqrespId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

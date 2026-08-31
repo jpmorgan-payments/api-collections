@@ -1,0 +1,21 @@
+meta {
+  name: Get Auth Details byTxID
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{online_url}}/payments/{{transactionId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}

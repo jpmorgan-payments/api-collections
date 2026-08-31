@@ -1,0 +1,35 @@
+meta {
+  name: Wallet Decrypt (Google Pay)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{online_url}}/wallet-decryptions
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "encryptedPayloadText": "{\"encryptedMessage\":\"vAF6bDhVsMnOnz0eKMrBRn4C1I76sZc+8IWPeorBJL820TN7kLLqLIH0fD4tmnIPUGS3zQlVX5hRhecYdmIGnpNv1W/1oe3hvdydmSP+o04bFAAK+XpqjRrSwD/vNAzIhjTnpuEa9g92grUs+DQpB7/hhsGSRJcbeLz+zA12iOMAi1LwrU0U27m0CmTd2aQr6t12Ujgq4DUYuYRvdVDA62uyGZeepjRdgAunn8v2qGNkdi6RcdsM9NiGEF9HQd4i8tN/7YfAEMZEE9fPqINsYWc2wrpmQtMXycQ9wfhT3jTpZ/rsmpuqbd3D12RB12OYWcir1nbHMTDRt+jJ/F87vNPIqRW+sjgi2zuo9CO5jO24cFlEXE5FqVEz2i5phPhZ3VuSqjE+Vsx5EmD0Czi779a436k1H/9tXXpu433CViVIfA\\u003d\\u003d\",\"ephemeralPublicKey\":\"BOn0Hz0PzJXBkmNqKwiGJw85THbRPFXRkocMC0quNbvjXu9XqVvzRzs0luXY2paaHK77L9GZyYCApvRqeUGNVHE\\u003d\",\"tag\":\"BycEuXvdD2iZNtzQpHOOkeVVSVVU/x5vveBEQH8T8n0\\u003d\"}",
+    "walletProvider": "GOOGLE_PAY",
+    "digitalSignature": "MEUCIQC122Jg88a0gMzGidKUuReuEHAZG6wgm1BOGsx4GqFTlQIgdyaTRY27n1HUpRAvyRq9ilF8zhJOKJIZ7X184YNkc4U=",
+    "version": "ECv1"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+}

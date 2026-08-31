@@ -1,0 +1,60 @@
+meta {
+  name: PBL Create Payment Link
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{checkout_url_0}}/payment-links/
+  body: json
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchant-id}}
+  requestId: {{request-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+      "merchantOrderNumber": "{{merchantOrderNumber}}",
+      "name": "{{$randomFullName}}",
+      "description": "{{$randomLoremSentence}}",
+      "expirationTimestamp": "2027-12-26T15:22:30.442Z",
+      "items": [
+          {
+              "product": {
+                  "productId": "",
+                  "name": "",
+                  "sku": "",
+                  "description": ""
+              },
+              "quantity": 2,
+              "unitPrice": "50"
+          }
+      ],
+      "totalTransactionAmount": 100,
+      "currencyCode": "USD",
+      "customer": {
+          "email": "{{$randomEmail}}",
+          "firstName": "{{$randomFirstName}}",
+          "lastName": "{{$randomLastName}}"
+      }
+  }
+}
+
+tests {
+  //saving the link id
+  if(res.body.link.linkId){
+    bru.setEnvVar("checkout_linkID",res.body.link.linkId);
+  }
+  
+  //saving the merchant order number
+  if(res.body.link.merchantOrderNumber){
+  bru.setEnvVar("merchantOrderNumber",res.body.link.merchantOrderNumber);
+  }
+}

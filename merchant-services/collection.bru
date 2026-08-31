@@ -1,0 +1,35 @@
+meta {
+  name: Commerce APIs
+}
+
+auth {
+  mode: oauth2
+}
+
+auth:oauth2 {
+  grant_type: client_credentials
+  access_token_url: https://idag2.jpmorganchase.com/adfs/oauth2/token
+  refresh_token_url: https://idag2.jpmorganchase.com/adfs/oauth2/token
+  client_id: {{clientId}}
+  client_secret: 
+  scope: 
+  credentials_placement: body
+  credentials_id: access_token
+  token_source: access_token
+  token_placement: header
+  token_header_prefix: Bearer
+  auto_fetch_token: true
+  auto_refresh_token: true
+}
+
+auth:oauth2:additional_params:access_token_req:body {
+  resource: <YOUR_RESOURCE_URN>
+  client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+  client_assertion: {{JWSPayload}}
+}
+
+auth:oauth2:additional_params:refresh_token_req:body {
+  resource: <YOUR_RESOURCE_URN>
+  client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+  client_assertion: {{JWSPayload}}
+}

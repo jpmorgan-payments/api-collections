@@ -1,0 +1,26 @@
+meta {
+  name: PBL List Payment Links
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{checkout_url_0}}/payment-links/?page_size=10&page_token=&filter&order_by
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page_size: 10
+  page_token: 
+  filter: null
+  order_by: null
+}
+
+headers {
+  merchantId: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}

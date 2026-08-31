@@ -1,0 +1,195 @@
+meta {
+  name: Intent (Level 3 Example 2)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{checkout_url}}/intent
+  body: json
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchant-id}}
+  requestId: {{request-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "currencyCode": "USD",
+    "cart": {
+      "totalTransactionAmount": 3055,
+      "taxAmount": 2056,
+      "transactionDiscountAmount": 645,
+      "discounts": [
+        {
+          "discountType": "DISCOUNT_TYPE_PROMOTION",
+          "discountTypeDescription": "discount",
+          "discountMode": "RATE_MODE_FLAT",
+          "transactionDiscountAmount": 645,
+          "promotionCode": "Summer Sale"
+        }
+      ],
+      "taxes": [
+        {
+          "taxTypeCode": "TAX_TYPE_SHIPPING_VAT_TAX",
+          "taxTypeDescription": "tax desc",
+          "taxMode": "RATE_MODE_PERCENTAGE",
+          "taxPercent": 10,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        },
+        {
+          "taxTypeCode": "TAX_TYPE_SHIPPING_VAT_TAX",
+          "taxTypeDescription": "tax desc",
+          "taxMode": "RATE_MODE_FLAT",
+          "taxAmount": 250,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        },
+        {
+          "taxTypeCode": "TAX_TYPE_VAT",
+          "taxTypeDescription": "tax desc",
+          "taxMode": "RATE_MODE_PERCENTAGE",
+          "taxPercent": 20,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        },
+        {
+          "taxTypeCode": "TAX_TYPE_VAT",
+          "taxTypeDescription": "tax desc",
+          "taxMode": "RATE_MODE_FLAT",
+          "taxAmount": 500,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        },
+        {
+          "taxTypeCode": "TAX_TYPE_ALTERNATE_TAX",
+          "taxTypeDescription": "tax desc",
+          "taxMode": "RATE_MODE_FLAT",
+          "taxAmount": 190,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        },
+        {
+          "taxTypeCode": "TAX_TYPE_IMPORT_TAX",
+          "taxTypeDescription": "tax desc",
+          "taxMode": "RATE_MODE_FLAT",
+          "taxAmount": 200,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        }
+      ],
+      "transactionAdvices": [
+        "TXN_01",
+        "TXN_02"
+      ],
+      "totalShippingAmount": "300",
+      "taxTreatmentCode": "TTC",
+      "lineItems": [
+        {
+          "id": "{{merchantOrderNumber}}_01",
+          "quantity": 1,
+          "unitPrice": 1000,
+          "imageUrl": "https://your-domain.example.com/images/product.jpg",
+          "taxable": true,
+          "shippable": true,
+          "taxInclusiveLineItemTotalAmount": 1700,
+          "transactionDiscountAmount": 300,
+          "totalTaxAmount": 400,
+          "product": {
+            "merchantProductIdentifier": "MPI01",
+            "productName": "Men's Casual Shirt",
+            "productDescription": "A comfortable and stylish shirt",
+            "imageUrl": "https://your-domain.example.com/images/product.jpg",
+            "isTaxable": true,
+            "shippable": true,
+            "itemCommodityCode": "ICC011",
+            "stockKeepingUnit": "SKU01"
+          },
+          "taxes": [
+            {
+              "taxTypeCode": "TAX_TYPE_STATE_SALES_TAX",
+              "taxTypeDescription": "tax desc",
+              "taxMode": "RATE_MODE_FLAT",
+              "taxAmount": 250,
+              "partyTaxGovernmentIssuedIdentifier": "pt01"
+            },
+            {
+              "taxTypeCode": "TAX_TYPE_STATE_SALES_TAX",
+              "taxTypeDescription": "tax desc",
+              "taxMode": "RATE_MODE_PERCENTAGE",
+              "taxPercent": 10,
+              "partyTaxGovernmentIssuedIdentifier": "pt01"
+            }
+          ]
+        },
+        {
+          "id": "{{merchantOrderNumber}}_02",
+          "quantity": 1,
+          "unitPrice": 1000,
+          "name": "Pants",
+          "product": {
+            "merchantProductIdentifier": "MPI0891",
+            "productName": "Pants",
+            "productDescription": "Pant",
+            "imageUrl": "https://your-domain.example.com/images/product.jpg",
+            "isTaxable": true,
+            "shippable": true,
+            "itemCommodityCode": "ICC02211",
+            "stockKeepingUnit": "SKU2301"
+          },
+          "description": "A comfortable and stylish",
+          "imageUrl": "https://your-domain.example.com/images/product.jpg",
+          "taxable": true,
+          "shippable": true,
+          "taxInclusiveLineItemTotalAmount": 1000,
+          "transactionDiscountAmount": 400,
+          "totalTaxAmount": 400
+        }
+      ],
+      "shippingAddress": {
+        "recipientFullName": "{{$randomFullName}}",
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "CA",
+        "country": "US",
+        "postalCode": "95111"
+      },
+      "shipFromAddressPostalCode": "95111"
+    },
+    "consumer": {
+      "email": "{{$randomEmail}}",
+      "billingAddress": {
+        "recipientFullName": "{{$randomFullName}}",
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "CA",
+        "country": "US",
+        "postalCode": "95111"
+      }
+    },
+    "checkoutOptions": {
+      "authorization": {
+        "authorizationType": "AUTH_METHOD_CART_AMOUNT"
+      },
+      "capture": {
+        "captureMethod": "CAPTURE_METHOD_NOW"
+      },
+      "consumerProfileOptions": {
+        "isSaveConsumerProfile": "false"
+      }
+    },
+    "purchaseOrderNumber": "{{merchantOrderNumber}}",
+    "merchantSalesChannelName": "ORDER_CHANNEL_TYPE_WEB",
+    "orderDate": "2027-05-08"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4().slice(1,20))
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}

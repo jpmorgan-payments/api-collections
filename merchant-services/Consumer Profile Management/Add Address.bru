@@ -1,0 +1,53 @@
+meta {
+  name: Add Address
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{consumerprofile_url}}/consumer-profiles/{{consumerprofileid}}/addresses
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  requestIdentifier: {{request-id}}
+  merchantIdentifier: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "firstName": "{{$randomFirstName}}",
+    "lastName": "{{$randomLastName}}",
+    "consumerAssignedAddressName": "Work2",
+    "primaryAddressIndicator": true,
+    "addressType": "SHIPPING",
+    "line1": "200 Elton Farm",
+    "line2": "Apt 123",
+    "city": "Glen Mills",
+    "state": "PA",
+    "postalCode": "19342",
+    "countryCode": "USA",
+    "addressStatus": "ACTIVE"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+tests {
+  // Set consumer profile id to variable for further use
+  if(res.body.consumerProfileId) {
+  bru.setEnvVar("consumerprofileid", res.body.consumerProfileId);
+  }
+}

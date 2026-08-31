@@ -1,0 +1,22 @@
+meta {
+  name: Get - NO_MATCH_PARTICIPATING_BIN by request Id
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{accountupdater_url}}/account-updates/{{nmpburreqId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

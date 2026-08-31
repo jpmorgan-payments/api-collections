@@ -1,0 +1,53 @@
+meta {
+  name: Delete Payment Method (background)
+  type: http
+  seq: 14
+}
+
+delete {
+  url: {{consumerprofile_url}}/consumer-profiles/{{consumerprofileid}}/payment-methods/{{consumerprofilepymntID2}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  requestIdentifier: {{request-id}}
+  merchantIdentifier: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+tests {
+  // Set consumer profile id to variable for further use
+  if(res.body.consumerProfileId) {
+  bru.setEnvVar("consumerprofileid", res.body.consumerProfileId);
+  }
+  
+  // Set consumer profile address to variable for further use
+  
+  if(Array.isArray(res.body.addresses) && res.body.addresses.length > 0)
+  {
+  var firstelement = res.body.addresses[1].addressIdentifier;
+  bru.setEnvVar("consumerprofileaddressid",JSON.stringify(firstelement));
+  let ogvalue = bru.getEnvVar("consumerprofileaddressid");
+  let modvalue = ogvalue.replace(/"/g,'');
+  bru.setEnvVar("consumerprofileaddressid",modvalue);
+  }
+  
+  
+  // Set payment method ID to variable for further use
+  if(res.body.paymentMethodType.defaultMOP.card.paymentMethodId) {
+  bru.setEnvVar("consumerprofilepymntID", res.body.paymentMethodType.defaultMOP.card.paymentMethodId);
+  }
+}

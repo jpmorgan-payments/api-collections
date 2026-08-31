@@ -1,0 +1,25 @@
+meta {
+  name: Get Refund Details by RequestID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{online_url}}/refunds?requestIdentifier={{refundRequestId}}
+  body: json
+  auth: inherit
+}
+
+params:query {
+  requestIdentifier: {{refundRequestId}}
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}

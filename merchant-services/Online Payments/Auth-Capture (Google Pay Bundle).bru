@@ -1,0 +1,72 @@
+meta {
+  name: Auth-Capture (Google Pay Bundle)
+  type: http
+  seq: 19
+}
+
+post {
+  url: {{online_url}}/payments
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{request-id}}
+  merchant-id: {{merchant-id}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "captureMethod": "NOW",
+    "amount": 1000,
+    "isAmountFinal": true,
+    "currency": "USD",
+    "initiatorType": "CARDHOLDER",
+    "accountOnFile": "NOT_STORED",
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "Payment Company",
+        "productName": "Application Name",
+        "version": 1.235
+      }
+    },
+    "paymentMethodType": {
+      "googlepay": {
+        "latLong": "1,1",
+        "encryptedPaymentBundle": {
+          "encryptedPayload": "{\"encryptedMessage\":\"vAF6bDhVsMnOnz0eKMrBRn4C1I76sZc+8IWPeorBJL820TN7kLLqLIH0fD4tmnIPUGS3zQlVX5hRhecYdmIGnpNv1W/1oe3hvdydmSP+o04bFAAK+XpqjRrSwD/vNAzIhjTnpuEa9g92grUs+DQpB7/hhsGSRJcbeLz+zA8SiOMAi1LwrU0U27m0CmTd2aQr6tSxUjgq4DUYuYRvdVDA62uyGZeepjRdgAunn8v2q123di6RcdsM9NiGEF9HQd4i8tN/7YfAEMZEE9fPqINsYWc2wrpmQtMXycQ9wfhT3jTpZ/rsmpuqbd3D12RBH3OYWcir1nbHMTDRt+jJ/F87vNPIqRW+sjgi2zuo9CO5jO24cFlEXE5FqVEz2i5phPhZ3VuSqjE+++12Vsx5EmD0Czi779a436k1H/9tXXpu433CViVIfA\\u003d\\u003d\",\"ephemeralPublicKey\":\"BOn0Hz0PzJXBkmNqKwiGJw85THbRPFXRkocMC0quNbvjXu9XqVvzRzs0luXY2paaHK77L9GZyYCApvRqeUGNVHE\\u003d\",\"tag\":\"BycEuXvdD2iZNtzQpHOOkeVVSVVU/x5vveBEQH8T8n0\\u003d\"}",
+          "encryptedPaymentHeader": {
+            "ephemeralPublicKey": "BOn0Hz0P532422BkmNqKwiGJw85THbRPFXRkocMC0quNbvjXu9XqVvzRzs0luXY2paaHK77L9GZyYCApvRqeUGNVHE="
+          },
+          "signature": "MEUCIQCFj2Jg88231243zGidKUuReuEHAZG6wgm1BOGsx4GqFTlQIgdyaTRY27n1HUpRAvyRq9ilF8zhJOKJIZ7X31231YNkc4U=",
+          "protocolVersion": "ECv1"
+        }
+      }
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setEnvVar("request-id", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  // Set transactionId to variable for further use
+  if(res.body.transactionId) {
+  bru.setEnvVar("transactionId", res.body.transactionId);
+  }
+  
+  // Set requestId to variable for further use
+  if(res.body.requestId) {
+  bru.setEnvVar("authRequestId", res.body.requestId);
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "version": "1",
+  "name": "JPMC_Commerce_APIs - Public",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ],
+  "size": 0.4604530334472656,
+  "filesCount": 436,
+  "proxy": {
+    "inherit": true,
+    "config": {
+      "protocol": "http",
+      "hostname": "",
+      "port": "",
+      "auth": {
+        "username": "",
+        "password": ""
+      },
+      "bypassProxy": ""
+    }
+  }
+}
