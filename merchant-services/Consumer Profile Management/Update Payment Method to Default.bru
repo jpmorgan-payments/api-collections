@@ -1,19 +1,18 @@
 meta {
   name: Update Payment Method to Default
   type: http
-  seq: 12
+  seq: 10
 }
 
 patch {
   url: {{consumerprofile_url}}/consumer-profiles/{{consumerprofileid}}/payment-methods/{{consumerprofilepymntID}}/default
-  body: json
+  body: none
   auth: inherit
 }
 
 headers {
-  Content-Type: application/json
-  requestIdentifier: {{request-id}}
-  merchantIdentifier: {{merchant-id}}
+  requestIdentifier: {{requestId}}
+  merchantIdentifier: {{merchantId}}
 }
 
 auth:bearer {
@@ -22,16 +21,16 @@ auth:bearer {
 
 script:pre-request {
   // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
-  bru.setEnvVar("request-id", require("uuid").v4())
+  bru.setVar("requestId", require("uuid").v4())
   
   // Generate merchantOrderNumber using UNIX timestamp and store in variable
-  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
 }
 
 tests {
   // Set consumer profile id to variable for further use
   if(res.body.consumerProfileId) {
-  bru.setEnvVar("consumerprofileid", res.body.consumerProfileId);
+  bru.setVar("consumerprofileid", res.body.consumerProfileId);
   }
   
   // Set consumer profile address to variable for further use
@@ -39,15 +38,15 @@ tests {
   if(Array.isArray(res.body.addresses) && res.body.addresses.length > 0)
   {
   var firstelement = res.body.addresses[1].addressIdentifier;
-  bru.setEnvVar("consumerprofileaddressid",JSON.stringify(firstelement));
-  let ogvalue = bru.getEnvVar("consumerprofileaddressid");
+  bru.setVar("consumerprofileaddressid",JSON.stringify(firstelement));
+  let ogvalue = bru.getVar("consumerprofileaddressid");
   let modvalue = ogvalue.replace(/"/g,'');
-  bru.setEnvVar("consumerprofileaddressid",modvalue);
+  bru.setVar("consumerprofileaddressid",modvalue);
   }
   
   
   // Set payment method ID to variable for further use
   if(res.body.paymentMethodType.defaultMOP.card.paymentMethodId) {
-  bru.setEnvVar("consumerprofilepymntID", res.body.paymentMethodType.defaultMOP.card.paymentMethodId);
+  bru.setVar("consumerprofilepymntID", res.body.paymentMethodType.defaultMOP.card.paymentMethodId);
   }
 }

@@ -11,8 +11,16 @@ post {
 }
 
 headers {
-  merchantId: {{merchant-id}}
-  requestId: {{request-id}}
+  merchantId: {{merchantId}}
+  requestId: {{requestId}}
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4().slice(1,20))
+
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
 }
 
 auth:bearer {
@@ -54,10 +62,3 @@ body:json {
   }
 }
 
-script:pre-request {
-  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
-  bru.setEnvVar("request-id", require("uuid").v4().slice(1,20))
-  
-  // Generate merchantOrderNumber using UNIX timestamp and store in variable
-  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
-}

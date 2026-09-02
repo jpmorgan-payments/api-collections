@@ -1,0 +1,51 @@
+meta {
+  name: Register
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{accountupdater_url}}/account-updates
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+  ~merchant-id: {{merchantId}}
+}
+
+body:json {
+  {
+    "accountInformation": {
+      "cardNumber": "4111111111111114",
+      "expiry": {
+        "month": "9",
+        "year": "2032"
+      }
+    },
+    "cardAccountAction": "REGISTER",
+    "merchantRecordIdentifier": "{{$guid}}"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+tests {
+  // Set transactionId to variable for further use
+  if(res.body.requestId) {
+  bru.setVar("careqId", res.body.requestId);
+  }
+  
+  if(res.body.responseId) {
+  bru.setVar("carespId", res.body.responseId);
+  }
+}

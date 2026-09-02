@@ -1,0 +1,45 @@
+meta {
+  name: One Time Inquiry
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{accountupdater_url}}/account-updates
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+body:json {
+  {
+    "accountInformation": {
+      "cardNumber": "6011111111111117",
+      "expiry": {
+        "month": 8,
+        "year": 2026
+      }
+    }
+  }
+}
+
+tests {
+  // Set transactionId to variable for further use
+  if(res.body.requestId) {
+  bru.setVar("neootqreqId", res.body.requestId);
+  }
+  
+  if(res.body.responseId) {
+  bru.setVar("neootqrespId", res.body.responseId);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

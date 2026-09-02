@@ -12,8 +12,8 @@ post {
 
 headers {
   Content-Type: application/json
-  request-id: {{request-id}}
-  merchant-id: {{merchant-id}}
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
 }
 
 auth:bearer {
@@ -29,5 +29,5 @@ body:json {
 
 script:pre-request {
   // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
-  bru.setEnvVar("request-id", require("uuid").v4())
+  bru.setVar("requestId", require("uuid").v4())
 }

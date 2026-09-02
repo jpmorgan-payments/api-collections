@@ -1,0 +1,27 @@
+meta {
+  name: Un Register - Get by response Id
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{accountupdater_url}}/account-updates/{{neurrespId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+script:pre-request {
+  // Fresh request-id per call
+  bru.setVar("requestId", require("uuid").v4());
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -11,8 +11,8 @@ post {
 }
 
 headers {
-  merchantId: {{merchant-id}}
-  requestId: {{request-id}}
+  merchantId: {{merchantId}}
+  requestId: {{requestId}}
 }
 
 auth:bearer {
@@ -103,12 +103,12 @@ body:json {
 
 script:pre-request {
   // Generate merchantOrderNumber using UNIX timestamp and store in variable
-  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
 }
 
 tests {
   // saving link id 
   if(res.body.link.linkId){
-  bru.setEnvVar("checkout_linkID",res.body.link.linkId);
+  bru.setVar("checkout_linkID",res.body.link.linkId);
   }
 }

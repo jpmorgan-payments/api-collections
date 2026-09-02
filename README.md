@@ -1,8 +1,8 @@
-# J.P. Morgan Payments Developer Portal — Commerce APIs Bruno Collection
+# J.P. Morgan Payments Developer Portal — Bruno Collections
 
-A [Bruno](https://www.usebruno.com/) collection of ready-to-run requests for J.P. Morgan's Payments Developer Portal (PDP) Commerce APIs. Bruno is a fast, open-source, offline-first API client — collections are stored as plain-text `.bru` files, so this repository can be opened directly in the Bruno app with no import step required.
+[Bruno](https://www.usebruno.com/) collections of ready-to-run requests for J.P. Morgan's Payments Developer Portal (PDP) APIs. Bruno is a fast, open-source, offline-first API client — collections are stored as plain-text `.bru` files, so this repository can be opened directly in the Bruno app with no import step required.
 
-The collection covers Checkout, Online Payments, 3-D Secure, Account Updater, Consumer Profile Management, Tokenization, Verifications, Wallet Decryptions, and Notifications. This README only provides a high-level overview — for full API reference material and integration guides, see the official [J.P. Morgan Payments Developer Portal documentation](https://developer.payments.jpmorgan.com/docs/home).
+This repository currently hosts one collection, [`merchant-services/`](merchant-services/), covering Checkout, Online Payments, 3-D Secure, Account Updater, Consumer Profile Management, Tokenization, Verifications, Wallet Decryptions, and Notifications. This README only provides a high-level overview — for full API reference material and integration guides, see the official [J.P. Morgan Payments Developer Portal documentation](https://developer.payments.jpmorgan.com/docs/home).
 
 ## Disclaimer
 
@@ -12,7 +12,13 @@ The collection covers Checkout, Online Payments, 3-D Secure, Account Updater, Co
 
 ## What's Inside
 
-This is a high-level index only — folders are grouped by API, and each contains ready-to-send requests for that API's endpoints.
+Each top-level folder is a separate, self-contained Bruno collection (own `bruno.json` and `collection.bru`). This is a high-level index only — see each collection's `collection.bru` docs for details.
+
+| Folder | Purpose |
+| ------ | ------- |
+| [`merchant-services/`](merchant-services/) | Checkout, Online Payments, 3-D Secure, Account Updater, Consumer Profile Management, Tokenization, Verifications, Wallet Decryptions, and Notifications requests |
+
+Within `merchant-services/`, folders are grouped by API, each containing ready-to-send requests for that API's endpoints:
 
 | Folder | Purpose |
 | ------ | ------- |
@@ -25,8 +31,6 @@ This is a high-level index only — folders are grouped by API, and each contain
 | `Tokenization/` | Token vaulting requests |
 | `Verifications/` | Account/entity verification requests |
 | `Wallet Decryptions/` | Wallet payload decryption requests |
-| `environments/` | Environment variable sets (base URLs, credentials, test data) shared across requests |
-
 For full endpoint documentation, request/response schemas, and field-level constraints, refer to the official [J.P. Morgan Payments Developer Portal](https://developer.payments.jpmorgan.com/docs/home).
 
 ---
@@ -34,14 +38,14 @@ For full endpoint documentation, request/response schemas, and field-level const
 ## Installation
 
 1. Install [Bruno](https://www.usebruno.com/) — available for Windows, macOS, and Linux.
-2. In Bruno, choose **Open Collection** and select this repository's root folder (`bruno.json` identifies it as a Bruno collection).
-3. Select the `CAT ENV` environment (or create your own) from the environment picker in the top right of the Bruno window.
+2. In Bruno, choose **Open Collection** and select the collection folder you want to use (e.g. `merchant-services/`, which contains its own `bruno.json`).
+3. Configure the collection variables in Bruno's environment settings.
 
 ---
 
 ## Usage
 
-1. Open the `CAT ENV` environment and fill in your credentials — `clientId`, `gOauth_Priv_Key`, `kid`, `merchant-id`, and any other values marked with `<YOUR_...>` placeholders.
+1. Fill in the user-supplied secret variables in Bruno's secrets tab: `clientId`, `kid`, `merchantId`, `gOauth_Priv_Key`, and `resourceId`. The token request scripts populate `JWSPayload` and `auth-token` automatically.
 2. Run **JWT and Access Token.bru** (or **Only Access Token.bru** if you already have a signed client assertion) to exchange credentials for an access token. Collection-level OAuth2 (client credentials) is already configured in `collection.bru` to auto-fetch and auto-refresh tokens for every subsequent request.
 3. Open any folder (e.g. `Checkout/`, `Online Payments/`, `3-D Secure/`) and send a request. Pre-request and post-response scripts populate the environment variables (`transactionId`, `consumerprofileid`, etc.) that dependent requests rely on.
 
@@ -49,24 +53,25 @@ For full endpoint documentation, request/response schemas, and field-level const
 
 ---
 
+
 ## Repo Structure
 
 ```
 .
-├── 3-D Secure/                        # 3DS authentication requests
-├── Account Updater/                   # Discover / Mastercard / Visa account updater requests
-├── Checkout/                          # Checkout Drop-in / Hosted Payments Page requests
-├── Consumer Profile Management/       # Consumer profile, address, and payment method requests
-├── Notifications/                     # Webhook subscription management requests
-├── Online Payments/                   # Auth, capture, void, refund, and verification requests
-├── Tokenization/                      # Tokenization requests
-├── Verifications/                     # Verification requests
-├── Wallet Decryptions/                # Wallet decryption requests
-├── environments/                      # Environment variable sets (e.g. CAT ENV.bru)
-├── bruno.json                         # Bruno collection manifest
-├── collection.bru                     # Collection-level OAuth2 configuration
-├── JWT and Access Token.bru           # JWT signing + token exchange request
-├── Only Access Token.bru              # Token exchange request using a pre-built assertion
+├── merchant-services/                 # Bruno collection: Commerce APIs
+│   ├── 3-D Secure/                    # 3DS authentication requests
+│   ├── Account Updater/               # Discover / Mastercard / Visa account updater requests
+│   ├── Checkout/                      # Checkout Drop-in / Hosted Payments Page requests
+│   ├── Consumer Profile Management/   # Consumer profile, address, and payment method requests
+│   ├── Notifications/                 # Webhook subscription management requests
+│   ├── Online Payments/               # Auth, capture, void, refund, and verification requests
+│   ├── Tokenization/                  # Tokenization requests
+│   ├── Verifications/                 # Verification requests
+│   ├── Wallet Decryptions/            # Wallet decryption requests
+│   ├── bruno.json                     # Bruno collection manifest
+│   ├── collection.bru                 # Collection-level OAuth2 configuration
+│   ├── JWT and Access Token.bru       # JWT signing + token exchange request
+│   └── Only Access Token.bru          # Token exchange request using a pre-built assertion
 ├── LICENSE
 └── README.md
 ```

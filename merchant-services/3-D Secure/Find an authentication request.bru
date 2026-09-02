@@ -1,7 +1,7 @@
 meta {
   name: Find an authentication request
   type: http
-  seq: 4
+  seq: 1
 }
 
 get {
@@ -12,8 +12,8 @@ get {
 
 headers {
   Content-Type: application/json
-  request-id: {{request-id}}
-  merchant-id: {{merchant-id}}
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
 }
 
 auth:bearer {
@@ -22,26 +22,29 @@ auth:bearer {
 
 script:pre-request {
   // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
-  bru.setEnvVar("request-id", require("uuid").v4())
+  bru.setVar("requestId", require("uuid").v4())
   
   // Generate merchantOrderNumber using UNIX timestamp and store in variable
-  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
   
 }
 
 tests {
   // Set transactionId to variable for further use
   if(res.body.transactionId) {
-  bru.setEnvVar("transactionId", res.body.transactionId);
+  bru.setVar("transactionId", res.body.transactionId);
   }
   
+  // threeDomainSecureCompletion only exists once the CHALLENGE/FRICTIONLESS step has finished
+  if(res.body.authenticationResult && res.body.authenticationResult.threeDomainSecureCompletion) {
   // Set 3DS Authentication Value to variable for further use
   if(res.body.authenticationResult.threeDomainSecureCompletion.threeDSAuthenticationValue) {
-  bru.setEnvVar("3dsAuthValue", res.body.authenticationResult.threeDomainSecureCompletion.threeDSAuthenticationValue);
+  bru.setVar("3dsAuthValue", res.body.authenticationResult.threeDomainSecureCompletion.threeDSAuthenticationValue);
   }
   
   // Set 3DS ECI to variable for further use
   if(res.body.authenticationResult.threeDomainSecureCompletion.electronicCommerceIndicator) {
-  bru.setEnvVar("3dsECI", res.body.authenticationResult.threeDomainSecureCompletion.electronicCommerceIndicator);
+  bru.setVar("3dsECI", res.body.authenticationResult.threeDomainSecureCompletion.electronicCommerceIndicator);
+  }
   }
 }

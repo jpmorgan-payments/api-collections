@@ -11,8 +11,8 @@ post {
 }
 
 headers {
-  merchantId: {{merchant-id}}
-  requestId: {{request-id}}
+  merchantId: {{merchantId}}
+  requestId: {{requestId}}
 }
 
 auth:bearer {
@@ -50,11 +50,11 @@ body:json {
 tests {
   //saving the link id
   if(res.body.link.linkId){
-    bru.setEnvVar("checkout_linkID",res.body.link.linkId);
+    bru.setVar("checkout_linkID",res.body.link.linkId);
   }
   
   //saving the merchant order number
   if(res.body.link.merchantOrderNumber){
-  bru.setEnvVar("merchantOrderNumber",res.body.link.merchantOrderNumber);
+  bru.setVar("merchantOrderNumber",res.body.link.merchantOrderNumber);
   }
 }

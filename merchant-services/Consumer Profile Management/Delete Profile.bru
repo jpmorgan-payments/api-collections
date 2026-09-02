@@ -1,19 +1,18 @@
 meta {
   name: Delete Profile
   type: http
-  seq: 7
+  seq: 20
 }
 
 delete {
   url: {{consumerprofile_url}}/consumer-profiles/{{consumerprofileid}}
-  body: json
+  body: none
   auth: inherit
 }
 
 headers {
-  Content-Type: application/json
-  requestIdentifier: {{request-id}}
-  merchantIdentifier: {{merchant-id}}
+  requestIdentifier: {{requestId}}
+  merchantIdentifier: {{merchantId}}
 }
 
 auth:bearer {
@@ -22,8 +21,8 @@ auth:bearer {
 
 script:pre-request {
   // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
-  bru.setEnvVar("request-id", require("uuid").v4())
+  bru.setVar("requestId", require("uuid").v4())
   
   // Generate merchantOrderNumber using UNIX timestamp and store in variable
-  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
 }

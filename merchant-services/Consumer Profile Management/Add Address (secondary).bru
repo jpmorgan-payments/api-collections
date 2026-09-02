@@ -1,0 +1,66 @@
+meta {
+  name: Add Address (secondary)
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{consumerprofile_url}}/consumer-profiles/{{consumerprofileid}}/addresses
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  requestIdentifier: {{requestId}}
+  merchantIdentifier: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "firstName": "{{$randomFirstName}}",
+    "lastName": "{{$randomLastName}}",
+    "consumerAssignedAddressName": "{{secondaryAddressName}}",
+    "primaryAddressIndicator": false,
+    "addressType": "SHIPPING",
+    "line1": "{{$randomStreetAddress}}",
+    "line2": "Apt {{$randomInt}}",
+    "city": "Glen Mills",
+    "state": "PA",
+    "postalCode": "19342",
+    "countryCode": "USA",
+    "addressStatus": "ACTIVE"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  
+  // Unique name so the tests block can identify this address in the response
+  bru.setVar("secondaryAddressName", "Secondary-" + Date.now());
+}
+
+tests {
+  // Set consumer profile id to variable for further use
+  if(res.body.consumerProfileId) {
+  bru.setVar("consumerprofileid", res.body.consumerProfileId);
+  }
+  
+  // Set the newly added secondary address id to variable for the delete request
+  if(Array.isArray(res.body.addresses) && res.body.addresses.length > 0)
+  {
+  let name = bru.getVar("secondaryAddressName");
+  let match = res.body.addresses.find(a => a.consumerAssignedAddressName === name);
+  if(match && match.addressIdentifier) {
+  bru.setVar("consumerprofileaddressid2", String(match.addressIdentifier));
+  }
+  }
+}

@@ -17,8 +17,8 @@ params:query {
 }
 
 headers {
-  merchantId: {{merchant-id}}
-  requestId: {{request-id}}
+  merchantId: {{merchantId}}
+  requestId: {{requestId}}
 }
 
 auth:bearer {
@@ -27,7 +27,7 @@ auth:bearer {
 
 script:pre-request {
   // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
-  bru.setEnvVar("request-id", require("uuid").v4().slice(1,20))
+  bru.setVar("requestId", require("uuid").v4().slice(1,20))
   
   const moment = require("moment");
   
@@ -35,11 +35,11 @@ script:pre-request {
   const timenow = moment().utc().format();
   
   // Set the environment variable for the current time
-  bru.setEnvVar("timenow", timenow);
+  bru.setVar("timenow", timenow);
   
   // Calculate the time one day before the current time
   const timebefore = moment().utc().subtract(29, 'days').format();
   
   // Set the environment variable for the time one day before
-  bru.setEnvVar("timebefore", timebefore);
+  bru.setVar("timebefore", timebefore);
 }

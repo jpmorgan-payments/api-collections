@@ -12,8 +12,8 @@ post {
 
 headers {
   Content-Type: application/json
-  request-id: {{request-id}}
-  merchant-id: {{merchant-id}}
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
 }
 
 auth:bearer {
@@ -23,7 +23,7 @@ auth:bearer {
 body:json {
   {
     "accountInformation": {
-      "cardNumber": "{{cardNum}}",
+      "cardNumber": "{{testCardNum}}",
       "cardSource": "KEY_ENTERED"
     }
   }
@@ -31,20 +31,20 @@ body:json {
 
 script:pre-request {
   // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
-  bru.setEnvVar("request-id", require("uuid").v4())
+  bru.setVar("requestId", require("uuid").v4())
   
   // Generate merchantOrderNumber using UNIX timestamp and store in variable
-  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
 }
 
 tests {
   // Set tokenNumber to variable for further use
   if(res.body.tokenInformation.acquirerTokenNumber){
-  bru.setEnvVar("tokenNumber",res.body.tokenInformation.acquirerTokenNumber);
+  bru.setVar("tokenNumber",res.body.tokenInformation.acquirerTokenNumber);
   }
   
   // Set token reference ID to variable for further use
   if(res.body.identifier){
-  bru.setEnvVar("tokenReferenceIdentifier",res.body.identifier);
+  bru.setVar("tokenReferenceIdentifier",res.body.identifier);
   }
 }

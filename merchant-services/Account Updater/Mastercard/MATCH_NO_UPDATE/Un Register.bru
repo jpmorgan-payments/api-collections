@@ -1,0 +1,46 @@
+meta {
+  name: Un Register
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{accountupdater_url}}/account-updates
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+body:json {
+  {
+    "accountInformation": {
+      "cardNumber": "5111111111111112",
+      "expiry": {
+        "month": 8,
+        "year": 2026
+      }
+    },
+    "cardAccountAction": "UNREGISTER"
+  }
+}
+
+tests {
+  // Set transactionId to variable for further use
+  if(res.body.requestId) {
+  bru.setVar("mnuurreqId", res.body.requestId);
+  }
+  
+  if(res.body.responseId) {
+  bru.setVar("mnuurrespId", res.body.responseId);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

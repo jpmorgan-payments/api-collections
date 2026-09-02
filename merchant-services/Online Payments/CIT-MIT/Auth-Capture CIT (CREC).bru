@@ -12,8 +12,8 @@ post {
 
 headers {
   Content-Type: application/json
-  request-id: {{request-id}}
-  merchant-id: {{merchant-id}}
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
 }
 
 auth:bearer {
@@ -36,7 +36,7 @@ body:json {
     "paymentMethodType": {
       "card": {
         "accountNumberType": "PAN",
-        "accountNumber": "{{cardNum}}",
+        "accountNumber": "{{testCardNum}}",
         "expiry": {
           "month": 5,
           "year": 2027
@@ -63,25 +63,25 @@ body:json {
 
 script:pre-request {
   // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
-  bru.setEnvVar("request-id", require("uuid").v4())
+  bru.setVar("requestId", require("uuid").v4())
   
   // Generate merchantOrderNumber using UNIX timestamp and store in variable
-  bru.setEnvVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
 }
 
 script:post-response {
   // Set transactionId to variable for further use
   if(res.body.transactionId) {
-  bru.setEnvVar("transactionId", res.body.transactionId);
+  bru.setVar("transactionId", res.body.transactionId);
   }
   
   // Set requestId to variable for further use
   if(res.body.requestId) {
-  bru.setEnvVar("authRequestId", res.body.requestId);
+  bru.setVar("authRequestId", res.body.requestId);
   }
   
   // Set Network Transaction ID to variable for further use
   if(res.body.paymentMethodType.card.networkResponse.networkTransactionId) {
-  bru.setEnvVar("networkTransactionId", res.body.paymentMethodType.card.networkResponse.networkTransactionId);
+  bru.setVar("networkTransactionId", res.body.paymentMethodType.card.networkResponse.networkTransactionId);
   }
 }
