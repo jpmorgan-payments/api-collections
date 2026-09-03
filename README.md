@@ -1,8 +1,8 @@
-# J.P. Morgan Payments Developer Portal — Bruno Collections
+# J.P. Morgan Payments — Bruno Collections
 
-[Bruno](https://www.usebruno.com/) collections of ready-to-run requests for J.P. Morgan's Payments Developer Portal (PDP) APIs. Bruno is a fast, open-source, offline-first API client — collections are stored as plain-text `.bru` files, so this repository can be opened directly in the Bruno app with no import step required.
+[Bruno](https://www.usebruno.com/) collections of ready-to-run requests for the J.P. Morgan Payments APIs. Bruno is a fast, open-source, offline-first API client — collections are stored as plain-text `.bru` files, so this repository can be opened directly in the Bruno app with no import step required.
 
-This repository currently hosts one collection, [`merchant-services/`](merchant-services/), covering Checkout, Online Payments, 3-D Secure, Account Updater, Consumer Profile Management, Tokenization, Verifications, Wallet Decryptions, and Notifications. This README only provides a high-level overview — for full API reference material and integration guides, see the official [J.P. Morgan Payments Developer Portal documentation](https://developer.payments.jpmorgan.com/docs/home).
+This repository currently hosts one collection, [`merchant-services/`](merchant-services/), covering Checkout, Online Payments, 3-D Secure, Account Updater, Consumer Profile Management, Tokenization, Verifications, Wallet Decryptions, and Notifications. This README only provides a high-level overview — for full API reference material and integration guides, see the official [J.P. Morgan Payments documentation](https://developer.payments.jpmorgan.com/docs/home) on the Payments Developer Portal.
 
 ## Disclaimer
 
@@ -31,7 +31,7 @@ Within `merchant-services/`, folders are grouped by API, each containing ready-t
 | `Tokenization/` | Token vaulting requests |
 | `Verifications/` | Account/entity verification requests |
 | `Wallet Decryptions/` | Wallet payload decryption requests |
-For full endpoint documentation, request/response schemas, and field-level constraints, refer to the official [J.P. Morgan Payments Developer Portal](https://developer.payments.jpmorgan.com/docs/home).
+For full endpoint documentation, request/response schemas, and field-level constraints, refer to the official [J.P. Morgan Payments documentation](https://developer.payments.jpmorgan.com/docs/home) on the Payments Developer Portal.
 
 ---
 
@@ -49,10 +49,9 @@ For full endpoint documentation, request/response schemas, and field-level const
 2. Run **JWT and Access Token.bru** (or **Only Access Token.bru** if you already have a signed client assertion) to exchange credentials for an access token. Collection-level OAuth2 (client credentials) is already configured in `collection.bru` to auto-fetch and auto-refresh tokens for every subsequent request.
 3. Open any folder (e.g. `Checkout/`, `Online Payments/`, `3-D Secure/`) and send a request. Pre-request and post-response scripts populate the environment variables (`transactionId`, `consumerprofileid`, etc.) that dependent requests rely on.
 
-> For step-by-step integration guides and full field documentation, see the official [J.P. Morgan Payments Developer Portal](https://developer.payments.jpmorgan.com/docs/home).
+> For step-by-step integration guides and full field documentation, see the official [J.P. Morgan Payments documentation](https://developer.payments.jpmorgan.com/docs/home) on the Payments Developer Portal.
 
 ---
-
 
 ## Repo Structure
 
