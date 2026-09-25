@@ -1,0 +1,69 @@
+meta {
+  name: 01 Fraud Check
+  type: http
+  seq: 1
+}
+
+assert {
+  res.status: eq 200
+}
+
+post {
+  url: {{checkout_url}}/intent
+  body: json
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchantId}}
+  requestId: {{requestId}}
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4().slice(1,20))
+
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "currencyCode": "USD",
+    "cart": {
+      "totalTransactionAmount": 1000
+    },
+    "consumer": {
+      "email": "{{$randomEmail}}",
+      "billingAddress": {
+        "recipientFullName": "{{$randomFullName}}",
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "CA",
+        "country": "US",
+        "postalCode": "95000"
+      }
+    },
+    "checkoutOptions": {
+      "authorization": {
+        "authorizationType": "AUTH_METHOD_CART_AMOUNT"
+      },
+      "capture": {
+        "captureMethod": "CAPTURE_METHOD_NOW"
+      },
+      "consumerProfileOptions": {
+        "isSaveConsumerProfile": "false"
+      },
+      "fraudCheckOptions": {
+        "ignoreDeviceData": true,
+        "consumerCreateTimestamp": "{{$isoTimestamp}}"
+      }
+    }
+  }
+}
+

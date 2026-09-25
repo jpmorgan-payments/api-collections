@@ -1,0 +1,23 @@
+meta {
+  name: 05 Get Payment Link
+  type: http
+  seq: 5
+}
+
+assert {
+  res.status: eq 200
+}
+
+get {
+  url: {{checkout_url_0}}/payment-links/{{checkout_linkID}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}

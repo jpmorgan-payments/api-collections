@@ -1,0 +1,84 @@
+meta {
+  name: 10 Card - Auth (Manual)
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{online_url}}/payments
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "captureMethod": "MANUAL",
+    "amount": 10000,
+    "currency": "USD",
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "{{$randomProduct}}",
+        "version": "2.0"
+      }
+    },
+    "paymentMethodType": {
+      "card": {
+        "accountNumber": "{{testCardNum}}",
+        "expiry": {
+          "month": 5,
+          "year": 2027
+        },
+        "cvv":{{cvv}}
+      }
+    },
+    "accountHolder": {
+      "fullName": "{{$randomFullName}}",
+      "billingAddress": {
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "{{$randomCountryCode}}",
+        "postalCode": "33626"
+      }
+    },
+    "initiatorType": "CARDHOLDER",
+    "accountOnFile": "NOT_STORED",
+    "isAmountFinal": false
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.responseStatus: eq SUCCESS
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  // Save the authorization transaction id for the reauthorization and capture
+  if(res.body.transactionId) {
+  bru.setVar("authTransactionId", res.body.transactionId);
+  }
+  
+  // Set requestId to variable for further use
+  if(res.body.requestId) {
+  bru.setVar("authRequestId", res.body.requestId);
+  }
+}

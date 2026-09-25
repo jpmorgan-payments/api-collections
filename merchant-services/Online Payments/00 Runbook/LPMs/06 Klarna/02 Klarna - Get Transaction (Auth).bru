@@ -1,0 +1,31 @@
+meta {
+  name: 02 Klarna - Get Transaction (Auth)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{online_url}}/payments/{{authTransactionId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+}
+
+assert {
+  res.status: eq 200
+  res.body.responseStatus: eq SUCCESS
+}

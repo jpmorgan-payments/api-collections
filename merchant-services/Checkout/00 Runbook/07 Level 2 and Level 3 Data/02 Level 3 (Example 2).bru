@@ -1,0 +1,181 @@
+meta {
+  name: 02 Level 3 (Example 2)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{checkout_url}}/intent
+  body: json
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchantId}}
+  requestId: {{requestId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "currencyCode": "USD",
+    "cart": {
+      "totalTransactionAmount": 2350,
+      "taxAmount": 750,
+      "transactionDiscountAmount": 700,
+      "discounts": [
+        {
+          "discountType": "DISCOUNT_TYPE_PROMOTION",
+          "discountTypeDescription": "Summer sale discount",
+          "discountMode": "RATE_MODE_FLAT",
+          "transactionDiscountAmount": 700,
+          "promotionCode": "Summer Sale"
+        }
+      ],
+      "taxes": [
+        {
+          "id": "TAX_CART_01",
+          "taxTypeCode": "TAX_TYPE_STATE_SALES_TAX",
+          "taxTypeDescription": "State sales tax for line item 1",
+          "taxMode": "RATE_MODE_FLAT",
+          "taxAmount": 350,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        },
+        {
+          "id": "TAX_CART_02",
+          "taxTypeCode": "TAX_TYPE_STATE_SALES_TAX",
+          "taxTypeDescription": "State sales tax for line item 2",
+          "taxMode": "RATE_MODE_FLAT",
+          "taxAmount": 400,
+          "partyTaxGovernmentIssuedIdentifier": "pt01"
+        }
+      ],
+      "transactionAdvices": [
+        "TXN_01",
+        "TXN_02"
+      ],
+      "totalShippingAmount": 300,
+      "taxTreatmentCode": "TTC",
+      "lineItems": [
+        {
+          "id": "{{merchantOrderNumber}}_01",
+          "quantity": 1,
+          "unitPrice": 1000,
+          "name": "Men's Casual Shirt",
+          "description": "A comfortable and stylish shirt",
+          "imageUrl": "https://example.com/shirt.jpg",
+          "taxable": true,
+          "shippable": true,
+          "taxInclusiveLineItemTotalAmount": 1350,
+          "transactionDiscountAmount": 300,
+          "totalShippingAmount": 150,
+          "totalTaxAmount": 350,
+          "product": {
+            "merchantProductIdentifier": "MPI01",
+            "productName": "Men's Casual Shirt",
+            "productDescription": "A comfortable and stylish shirt",
+            "imageUrl": "https://example.com/shirt.jpg",
+            "isTaxable": true,
+            "shippable": true,
+            "itemCommodityCode": "ICC011",
+            "stockKeepingUnit": "SKU01"
+          },
+          "taxes": [
+            {
+              "id": "TAX_ITEM_01",
+              "taxTypeCode": "TAX_TYPE_STATE_SALES_TAX",
+              "taxTypeDescription": "State sales tax",
+              "taxMode": "RATE_MODE_FLAT",
+              "taxAmount": 350,
+              "partyTaxGovernmentIssuedIdentifier": "pt01"
+            }
+          ]
+        },
+        {
+          "id": "{{merchantOrderNumber}}_02",
+          "quantity": 1,
+          "unitPrice": 1000,
+          "name": "Pants",
+          "description": "A comfortable and stylish pair of pants",
+          "imageUrl": "https://example.com/pant.jpg",
+          "taxable": true,
+          "shippable": true,
+          "taxInclusiveLineItemTotalAmount": 1400,
+          "transactionDiscountAmount": 400,
+          "totalShippingAmount": 150,
+          "totalTaxAmount": 400,
+          "product": {
+            "merchantProductIdentifier": "MPI0891",
+            "productName": "Pants",
+            "productDescription": "A comfortable and stylish pair of pants",
+            "imageUrl": "https://example.com/pant.jpg",
+            "isTaxable": true,
+            "shippable": true,
+            "itemCommodityCode": "ICC02211",
+            "stockKeepingUnit": "SKU2301"
+          },
+          "taxes": [
+            {
+              "id": "TAX_ITEM_02",
+              "taxTypeCode": "TAX_TYPE_STATE_SALES_TAX",
+              "taxTypeDescription": "State sales tax",
+              "taxMode": "RATE_MODE_FLAT",
+              "taxAmount": 400,
+              "partyTaxGovernmentIssuedIdentifier": "pt01"
+            }
+          ]
+        }
+      ],
+      "shippingAddress": {
+        "recipientFullName": "{{$randomFullName}}",
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "CA",
+        "country": "US",
+        "postalCode": "95111"
+      },
+      "shipFromAddressPostalCode": "95111"
+    },
+    "consumer": {
+      "email": "{{$randomEmail}}",
+      "billingAddress": {
+        "recipientFullName": "{{$randomFullName}}",
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "CA",
+        "country": "US",
+        "postalCode": "95111"
+      }
+    },
+    "checkoutOptions": {
+      "authorization": {
+        "authorizationType": "AUTH_METHOD_CART_AMOUNT"
+      },
+      "capture": {
+        "captureMethod": "CAPTURE_METHOD_NOW"
+      },
+      "consumerProfileOptions": {
+        "isSaveConsumerProfile": false
+      }
+    },
+    "purchaseOrderNumber": "{{merchantOrderNumber}}",
+    "merchantSalesChannelName": "ORDER_CHANNEL_TYPE_WEB",
+    "orderDate": "2027-05-08"
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4().slice(1,20))
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
