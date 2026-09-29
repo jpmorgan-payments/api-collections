@@ -34,9 +34,9 @@ body:json {
         "consumerAssignedAddressName": "Work",
         "primaryAddressIndicator": true,
         "addressType": "SHIPPING",
-        "line1": "400 Elton Farm",
+              "line1": "{{$randomStreetAddress}}",
         "line2": "Apt 123",
-        "city": "Glen Mills",
+        "city": "{{$randomCity}}",
         "state": "PA",
         "postalCode": "19342",
         "countryCode": "USA",
@@ -46,8 +46,8 @@ body:json {
     "profilePaymentMethod": {
       "achList": [
         {
-          "accountNumber": "0888271156",
-          "financialInstitutionRoutingNumber": "122000247",
+          "accountNumber": "{{accountNumber}}",
+          "financialInstitutionRoutingNumber": "{{routingNumber}}",
           "paymentType": "WEB",
           "accountStatus": "ACTIVE",
           "firstName": "{{$randomFirstName}}",
@@ -58,7 +58,7 @@ body:json {
     "communication": {
       "phoneList": [
         {
-          "phoneNumber": "8888888888",
+          "phoneNumber":{{phoneNumber}},
           "countryCode": "840",
           "phoneNumberType": "Home"
         }
@@ -79,4 +79,14 @@ script:pre-request {
   
   // Generate merchantOrderNumber using UNIX timestamp and store in variable
   bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  
+  const acct = Math.floor(Math.random() * 1e10);
+  bru.setVar('accountNumber', String(acct).padStart(10, '0'));
+  
+  const w = [3, 7, 1, 3, 7, 1, 3, 7];                 // ABA weights for the first 8 digits
+  const d = Array.from({ length: 8 }, () => Math.floor(Math.random() * 10));
+  const sum = d.reduce((acc, digit, i) => acc + digit * w[i], 0);
+  const check = (10 - (sum % 10)) % 10;               // 9th digit satisfies the ABA checksum
+  bru.setVar('routingNumber', d.join('') + String(check));
+  
 }

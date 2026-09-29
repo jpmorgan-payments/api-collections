@@ -1,0 +1,65 @@
+meta {
+  name: 05 Card - Refund via Transaction ID
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{online_url}}/refunds
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "{{$randomProduct}}",
+        "version": "2.0"
+      }
+    },
+    "amount": 10000,
+    "currency": "USD",
+    "paymentMethodType": {
+      "transactionReference": {
+        "transactionReferenceId": "{{authTransactionId}}"
+      }
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  // Save the refund transaction id (do not overwrite authTransactionId)
+  if(res.body.transactionId) {
+  bru.setVar("refundTransactionId", res.body.transactionId);
+  }
+
+  // Set requestId to variable for further use
+  if(res.body.requestId) {
+  bru.setVar("refundRequestId", res.body.requestId);
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.responseStatus: eq SUCCESS
+}

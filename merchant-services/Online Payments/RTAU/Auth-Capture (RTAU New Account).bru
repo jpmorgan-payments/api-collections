@@ -43,7 +43,7 @@ body:json {
           "month": 5,
           "year": 2027
         },
-        "cvv": 411,
+        "cvv":{{cvv}},
         "accountUpdater": {
           "requestAccountUpdater": true
         }
@@ -52,7 +52,7 @@ body:json {
     "accountHolder": {
       "email": "{{$randomEmail}}",
       "phone": {
-        "phoneNumber": "8888888888"
+        "phoneNumber":{{phoneNumber}}
       },
       "billingAddress": {
         "line1": "{{$randomStreetAddress}}",

@@ -1,0 +1,41 @@
+meta {
+  name: 05 Card - Void (Partial)
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{online_url}}/payments/{{authTransactionId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+      "captureMethod": "NOW",
+      "amount": 1000
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+assert {
+  res.status: eq 200
+  res.body.responseStatus: eq SUCCESS
+}

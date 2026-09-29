@@ -11,8 +11,8 @@ auth:oauth2 {
   access_token_url: https://idag2.jpmorganchase.com/adfs/oauth2/token
   refresh_token_url: https://idag2.jpmorganchase.com/adfs/oauth2/token
   client_id: {{clientId}}
-  client_secret:
-  scope:
+  client_secret: 
+  scope: 
   credentials_placement: body
   credentials_id: access_token
   token_source: access_token
@@ -34,9 +34,18 @@ auth:oauth2:additional_params:refresh_token_req:body {
   client_assertion: {{JWSPayload}}
 }
 
+script:pre-request {
+  bru.setVar('cvv', String(Math.floor(100 + Math.random() * 900)));
+  bru.setVar('cvv4', String(Math.floor(1000 + Math.random() * 9000)));
+  const areaCode = Math.floor(200 + Math.random() * 800);   // NANP area code, first digit 2-9
+  const line = 100 + Math.floor(Math.random() * 100);        // 100-199
+  bru.setVar('phoneNumber', `${areaCode}5550${line}`);       // nnn + 555 + 0 + mmm
+  
+}
+
 tests {
   const status = res.status ?? res.statusCode;
-
+  
   if (typeof status !== "number" || status < 200 || status >= 300) {
     throw new Error(`Expected a 2xx response, received ${status}`);
   }
@@ -44,16 +53,20 @@ tests {
 
 docs {
   # J.P. Morgan Payments — Merchant Services
-
+  
   ## Usage
-
+  
   1. Fill in the user-supplied secret variables in Bruno's secrets tab: `clientId`, `kid`, `merchantId`, `gOauth_Priv_Key`, and `resourceId`. The token request scripts populate `JWSPayload` and `auth-token` automatically.
   2. Run **JWT and Access Token.bru** (or **Only Access Token.bru** if you already have a signed client assertion) to exchange credentials for an access token. Collection-level OAuth2 (client credentials) is already configured in `collection.bru` to auto-fetch and auto-refresh tokens for every subsequent request.
   3. Open any folder (e.g. `Checkout/`, `Online Payments/`, `3-D Secure/`) and send a request. Pre-request and post-response scripts populate the environment variables (`transactionId`, `consumerprofileid`, etc.) that dependent requests rely on.
-
+  
   > For step-by-step integration guides and full field documentation, see the official [J.P. Morgan Payments documentation](https://developer.payments.jpmorgan.com/docs/home) on the Payments Developer Portal.
-
+  
+  ## Runbooks
+  
+  Both `Checkout/` and `Online Payments/` contain a `00 Runbook` folder — an ordered, step-by-step walkthrough of that product's capabilities. Each numbered step folder has its own `docs` note (visible on the folder in Bruno) with a link to the matching guide on the official Payments Developer Portal. Open the folder for the area you're working on and follow the link there for the full request/response field reference.
+  
   ## Entitlements
-
+  
   Some actions are entitlement-gated per merchant ID, per brand or function (e.g. Account Updater by brand — Discover, Mastercard, Visa; 3-D Secure as a function). Requests for actions your `merchantId` isn't entitled to will fail; that is expected.
 }

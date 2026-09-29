@@ -111,23 +111,23 @@ body:json {
       "middleName": "{{$randomFirstName}}",
       "phone": {
         "countryCode": 1,
-        "phoneNumber": "8888888888"
+        "phoneNumber":{{phoneNumber}}
       },
       "billingAddress": {
-        "line1": "123 Some Street",
+        "line1": "{{$randomStreetAddress}}",
         "line2": "Apartment 3b",
         "state": "FL",
-        "city": "Clearwater",
+        "city": "{{$randomCity}}",
         "postalCode": "33607",
         "countryCode": "USA",
         "addressTypeCode": "Doing Business As Address"
       }
     },
     "shippingAddress": {
-      "line1": "ship123 Some Street",
+      "line1": "{{$randomStreetAddress}}",
       "line2": "shipApartment 3b",
       "state": "FL",
-      "city": "shipshipClearwater",
+      "city": "{{$randomCity}}",
       "postalCode": "33607",
       "countryCode": "USA",
       "addressTypeCode": "Doing Business As Address"

@@ -1,0 +1,87 @@
+meta {
+  name: 01 Create Profile
+  type: http
+  seq: 1
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:post-response {
+  // Save the created consumer profile id so Use Profile can reuse it in the same run
+  if (res.body && res.body.consumerProfileId) {
+    bru.setVar("consumerprofileid", res.body.consumerProfileId);
+  } else if (res.body && res.body.consumer && res.body.consumer.consumerProfileId) {
+    bru.setVar("consumerprofileid", res.body.consumer.consumerProfileId);
+  }
+}
+
+post {
+  url: {{checkout_url}}/intent
+  body: json
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchantId}}
+  requestId: {{requestId}}
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4().slice(1,20))
+
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "currencyCode": "USD",
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "checkoutOptions": {
+      "authorization": {
+        "authorizationType": "AUTH_METHOD_CART_AMOUNT",
+        "cardOnFile": {
+          "transactionType": "COF_TRANSACTION_TYPE_UNSCHEDULED"
+        }
+      },
+      "capture": {
+        "captureMethod": "CAPTURE_METHOD_NOW"
+      },
+      "consumerProfileOptions": {
+        "isSaveConsumerProfile": true
+      }
+    },
+    "cart": {
+      "totalTransactionAmount": 3000,
+      "shippingAddress": {
+        "recipientFullName": "{{$randomFullName}}",
+        "line1": "{{$randomStreetAddress}}",
+        "line2": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "DEU",
+        "country": "DE",
+        "postalCode": "10319"
+      }
+    },
+    "consumer": {
+      "phone": "{{phoneNumber}}",
+      "email": "{{$randomEmail}}",
+      "billingAddress": {
+        "recipientFullName": "{{$randomFullName}}",
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "CA",
+        "country": "US",
+        "postalCode": "95000"
+      }
+    }
+  }
+}
+

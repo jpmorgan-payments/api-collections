@@ -1,0 +1,122 @@
+meta {
+  name: 01 PayPal - Auth (LPM)
+  type: http
+  seq: 1
+}
+
+assert {
+  res.status: eq 200
+  res.body.responseStatus: eq SUCCESS
+}
+
+post {
+  url: {{online_url}}/payments
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "amount": 1000,
+    "currency": "EUR",
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "{{$randomProduct}}",
+        "version": "2.0"
+      }
+    },
+    "paymentMethodType": {
+      "paypal": {
+        "preferredLanguage": "en-US",
+        "redirectedPayment": {
+          "merchantReturnUrl": "https://your-merchant-domain.example.com/return"
+        }
+      }
+    },
+    "accountHolder": {
+      "fullName": "{{$randomFullName}}",
+      "email": "{{$randomEmail}}",
+      "mobile": {
+        "countryCode": "46",
+        "phoneNumber":{{phoneNumber}}
+      },
+      "phone": {
+        "countryCode": "46",
+        "phoneNumber":{{phoneNumber}}
+      },
+      "billingAddress": {
+        "line1": "{{$randomStreetAddress}}",
+        "line2": "{{$randomStreetAddress}}",
+        "postalCode": "33626",
+        "countryCode": "SWE",
+        "state": "{{$randomCountryCode}}",
+        "city": "{{$randomCity}}"
+      }
+    },
+    "retailAddenda": {
+      "purchaseOrderNumber": "{{merchantOrderNumber}}",
+      "isTaxable": "true",
+      "taxAmount": 1,
+      "level3": {
+        "lineItems": [
+          {
+            "lineItemDescriptionText": "{{$randomProduct}}",
+            "lineItemUnitQuantity": 1,
+            "unitPriceAmount": 100,
+            "taxInclusiveLineItemTotalAmount": 100
+          },
+          {
+            "lineItemDescriptionText": "{{$randomProduct}}",
+            "lineItemUnitQuantity": 2,
+            "unitPriceAmount": 200,
+            "taxInclusiveLineItemTotalAmount": 400
+          }
+        ]
+      }
+    },
+    "shipTo": {
+      "fullName": "{{$randomFullName}}",
+      "shippingAddress": {
+        "line1": "{{$randomStreetAddress}}",
+        "line2": "{{$randomStreetAddress}}",
+        "postalCode": "33626",
+        "countryCode": "SWE",
+        "state": "{{$randomCountryCode}}",
+        "city": "{{$randomCity}}"
+      }
+    },
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "statementDescriptor": "{{$randomCatchPhrase}}"
+  }
+}
+
+script:post-response {
+  // Set transactionId to variable for further use
+  if(res.body.transactionId) {
+  bru.setVar("authTransactionId", res.body.transactionId);
+  }
+  
+  // Set requestId to variable for further use
+  if(res.body.requestId) {
+  bru.setVar("authLPMRequestId", res.body.requestId);
+  }
+}

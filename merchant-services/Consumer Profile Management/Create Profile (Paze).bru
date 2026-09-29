@@ -34,9 +34,9 @@ body:json {
         "consumerAssignedAddressName": "Work",
         "primaryAddressIndicator": true,
         "addressType": "SHIPPING",
-        "line1": "400 Elton Farm",
+              "line1": "{{$randomStreetAddress}}",
         "line2": "Apt 123",
-        "city": "Glen Mills",
+        "city": "{{$randomCity}}",
         "state": "PA",
         "postalCode": "19342",
         "countryCode": "USA",
@@ -53,7 +53,7 @@ body:json {
     "communication": {
       "phoneList": [
         {
-          "phoneNumber": "8888888888",
+          "phoneNumber":{{phoneNumber}},
           "countryCode": "840",
           "phoneNumberType": "Home"
         }
