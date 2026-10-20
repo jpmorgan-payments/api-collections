@@ -1,0 +1,97 @@
+meta {
+  name: 03 Auth-Capture (Now)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{online_url}}/payments
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+  platform-id: {{platformId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "captureMethod": "NOW",
+    "amount": 10000,
+    "currency": "USD",
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "{{$randomProduct}}",
+        "version": "5.x"
+      }
+    },
+    "initiatorType": "MERCHANT",
+    "accountOnFile": "NOT_STORED",
+    "isAmountFinal": "true",
+    "paymentMethodType": {
+      "affirm": {
+        "preferredLanguage": "en_US",
+        "redirectedPayment": {
+          "merchantReturnUrl": "https://your-merchant-domain.example.com"
+        }
+      }
+    },
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "accountHolder": {
+      "billingAddress": {
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "MA",
+        "postalCode": "02777",
+        "countryCode": "USA"
+      },
+      "firstName": "{{$randomFirstName}}",
+      "lastName": "{{$randomLastName}}",
+      "fullName": "{{$randomFullName}}",
+      "countryOfNationality": "USA",
+      "email": "{{$randomEmail}}"
+    },
+    "shipTo": {
+      "shippingAddress": {
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "MA",
+        "postalCode": "02777",
+        "countryCode": "USA"
+      },
+      "firstName": "{{$randomFirstName}}",
+      "lastName": "{{$randomLastName}}",
+      "fullName": "{{$randomFullName}}",
+      "shippingDescription": "TC",
+      "shippingCarrierName": "DHL"
+    }
+  }
+}
+
+script:pre-request {
+  bru.setVar("requestId", require("uuid").v4())
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  if(res.body.transactionId) {
+  bru.setVar("LPMtransactionId", res.body.transactionId);
+  }
+  
+  if(res.body.requestId) {
+  bru.setVar("authLPMRequestId", res.body.requestId);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

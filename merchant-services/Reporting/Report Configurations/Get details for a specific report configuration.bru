@@ -1,0 +1,38 @@
+meta {
+  name: Get details for a specific report configuration
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{reporting_url}}/report-configs/4b01efc9-536b-11f1-a7fa-1b8109a461bc
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+docs {
+  [Reporting API](https://developer.payments.jpmorgan.com/api/commerce/optimization-protection/reporting/reporting)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

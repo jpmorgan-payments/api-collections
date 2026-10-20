@@ -1,0 +1,474 @@
+meta {
+  name: Generate a report (Financial Activity Summary report)
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{reporting_url}}/reports
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "entityType": "PE",
+    "entityIds": [
+      "993193196193"
+    ],
+    "preBuiltConfigurationId": "preset_Unified_Deposit_Activity_Summary_Report",
+    "reportSections": [
+      {
+        "sectionReportTypeId": "3003",
+        "sectionReportTypeName": "Submission Details",
+        "sectionTitle": "Conveyed Deposit Summary",
+        "sectionSelectedFields": [
+          {
+            "alias": "Record Type",
+            "constantValueText": "Conveyed Deposit Summary"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code"
+          },
+          {
+            "reportAttributeName": "Payment Method Code"
+          },
+          {
+            "alias": "Conveyed Sales Count",
+            "reportAttributeName": "Transaction Count",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN(\"Conveyed Sales\")"
+              }
+            ]
+          },
+          {
+            "alias": "Conveyed Sales Amount",
+            "reportAttributeName": "Presentment Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN(\"Conveyed Sales\")"
+              }
+            ]
+          },
+          {
+            "alias": "Conveyed Refund Count",
+            "reportAttributeName": "Transaction Count",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN(\"Conveyed Refunds\")"
+              }
+            ]
+          },
+          {
+            "alias": "Conveyed Refund Amount",
+            "reportAttributeName": "Presentment Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN(\"Conveyed Refunds\")"
+              }
+            ]
+          }
+        ],
+        "sectionFilterAttributeList": [
+          {
+            "reportAttributeName": "Charge Category Text",
+            "filterAttributeCode": "IN (\"Conveyed Sales\",\"Conveyed Refunds\")"
+          }
+        ],
+        "sectionSortOrderList": [
+          {
+            "reportAttributeName": "Payment Method Code",
+            "sortOrderCode": "desc"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code",
+            "sortOrderCode": "asc"
+          }
+        ]
+      },
+      {
+        "sectionReportTypeId": "3003",
+        "sectionReportTypeName": "Submission Details",
+        "sectionTitle": "Settled Deposit Summary",
+        "sectionSelectedFields": [
+          {
+            "alias": "Record Type",
+            "constantValueText": "Settled Deposit Summary"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code"
+          },
+          {
+            "reportAttributeName": "Payment Method Code"
+          },
+          {
+            "alias": "Settled Sales Count",
+            "reportAttributeName": "Transaction Count",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN(\"Settled Sales\")"
+              }
+            ]
+          },
+          {
+            "alias": "Settled Sales Amount in Presentment Currency",
+            "reportAttributeName": "Presentment Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Settled Conveyed Code",
+                "aggregateConditionText": "IN(\"S\")"
+              },
+              {
+                "aggregateConditionAttributeName": "Charge Category Code",
+                "aggregateConditionText": "IN(\"SALE\")"
+              }
+            ]
+          },
+          {
+            "alias": "Settled Sales Amount in Settlement Currency",
+            "reportAttributeName": "Settlement Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Settled Conveyed Code",
+                "aggregateConditionText": "IN(\"S\")"
+              },
+              {
+                "aggregateConditionAttributeName": "Charge Category Code",
+                "aggregateConditionText": "IN(\"SALE\")"
+              }
+            ]
+          },
+          {
+            "alias": "Settled Refund Count",
+            "reportAttributeName": "Transaction Count",
+            "aggregateOperationText": "count",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Settled Conveyed Code",
+                "aggregateConditionText": "IN(\"S\")"
+              },
+              {
+                "aggregateConditionAttributeName": "Charge Category Code",
+                "aggregateConditionText": "IN(\"REF\")"
+              }
+            ]
+          },
+          {
+            "alias": "Settled Refund Amount in Presentment Currency",
+            "reportAttributeName": "Presentment Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Settled Conveyed Code",
+                "aggregateConditionText": "IN(\"S\")"
+              },
+              {
+                "aggregateConditionAttributeName": "Charge Category Code",
+                "aggregateConditionText": "IN(\"REF\")"
+              }
+            ]
+          },
+          {
+            "alias": "Settled Refund Amount in Settlement Currency",
+            "reportAttributeName": "Settlement Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Settled Conveyed Code",
+                "aggregateConditionText": "IN(\"S\")"
+              },
+              {
+                "aggregateConditionAttributeName": "Charge Category Code",
+                "aggregateConditionText": "IN(\"REF\")"
+              }
+            ]
+          }
+        ],
+        "sectionFilterAttributeList": [
+          {
+            "reportAttributeName": "Charge Category Text",
+            "filterAttributeCode": "IN (\"Settled Sales\",\"Settled Refunds\")"
+          }
+        ],
+        "sectionSortOrderList": [
+          {
+            "reportAttributeName": "Payment Method Code",
+            "sortOrderCode": "desc"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code",
+            "sortOrderCode": "asc"
+          }
+        ]
+      },
+      {
+        "sectionReportTypeId": "3003",
+        "sectionReportTypeName": "Submission Details",
+        "sectionTitle": "Fees & Adjustments Summary",
+        "sectionSelectedFields": [
+          {
+            "alias": "Record Type",
+            "constantValueText": "Fees & Adjustments Summary"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code"
+          },
+          {
+            "alias": "Net Settled Deposits Amount",
+            "reportAttributeName": "Settlement Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Code",
+                "aggregateConditionText": "IN (\"SALE\",\"REF\")"
+              },
+              {
+                "aggregateConditionAttributeName": "Settled Conveyed Code",
+                "aggregateConditionText": "IN (\"S\")"
+              }
+            ]
+          },
+          {
+            "alias": "Interchange & Assessment Fees",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN (\"Interchange & Assessment Fees\")"
+              }
+            ]
+          },
+          {
+            "alias": "Processing Fees",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN (\"Processing Fees\")"
+              }
+            ]
+          },
+          {
+            "alias": "Chargeback Adjustments",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN (\"Chargeback Adjustments\")"
+              }
+            ]
+          },
+          {
+            "alias": "Other Fees & Adjustments",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "NOT IN (\"Settled Sales\",\"Settled Refunds\",\"Conveyed Sales\",\"Conveyed Refunds\",\"Interchange & Assessment Fees\",\"Chargeback Adjustments\",\"Processing Fees\")"
+              }
+            ]
+          },
+          {
+            "alias": "Net Financial Activity",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "NOT IN (\"Conveyed Sales\",\"Conveyed Refunds\")"
+              }
+            ]
+          },
+          {
+            "reportAttributeName": "Foreign Exchange Rate"
+          }
+        ],
+        "sectionFilterAttributeList": [
+          {
+            "reportAttributeName": "Charge Category Text",
+            "filterAttributeCode": "Not IN (\"Conveyed Sales\",\"Conveyed Refunds\")"
+          }
+        ],
+        "sectionSortOrderList": [
+          {
+            "reportAttributeName": "Presentment Currency Code",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code",
+            "sortOrderCode": "asc"
+          }
+        ]
+      },
+      {
+        "sectionReportTypeId": "3005",
+        "sectionReportTypeName": "Settlement Summary",
+        "sectionTitle": "Deposit Transfer Summary",
+        "sectionSelectedFields": [
+          {
+            "alias": "Record Type",
+            "constantValueText": "Deposit Transfer Summary"
+          },
+          {
+            "reportAttributeName": "Activity Date"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code"
+          },
+          {
+            "reportAttributeName": "Funds Transfer Category Description"
+          },
+          {
+            "reportAttributeName": "Fund Transfer Instruction Number"
+          },
+          {
+            "reportAttributeName": "Fund Transfer Identifier"
+          },
+          {
+            "reportAttributeName": "Merchant Activity Date Range"
+          },
+          {
+            "reportAttributeName": "Fund Transfer Effective Date"
+          },
+          {
+            "alias": "Funds Transfer Amount",
+            "reportAttributeName": "Funds Transfer Category Amount",
+            "aggregateOperationText": "sum"
+          }
+        ],
+        "sectionFilterAttributeList": [
+          {
+            "reportAttributeName": "Category Code",
+            "filterAttributeCode": "NOT IN (\"OTHER\")"
+          },
+          {
+            "reportAttributeName": "Funds Transfer Category Amount",
+            "filterAttributeCode": "!=0.0"
+          },
+          {
+            "reportAttributeName": "Settled Conveyed Code",
+            "filterAttributeCode": "IN (\"S\")"
+          }
+        ],
+        "sectionSortOrderList": [
+          {
+            "reportAttributeName": "Activity Date",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Funds Transfer Category Description",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Fund Transfer Effective Date",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Fund Transfer Identifier",
+            "sortOrderCode": "asc"
+          }
+        ]
+      }
+    ],
+    "frequencyConfig": {
+      "scheduleFrequency": "Adhoc",
+      "reportingPeriodStartTimestamp": "{{reportingPeriodStartTimestamp}}",
+      "reportingPeriodEndTimestamp": "{{reportingPeriodEndTimestamp}}"
+    },
+    "reportConfigurationName": "Deposit Activity Summary",
+    "reportName": "Deposit Activity Summary",
+    "reportConfigType": "PreBuilt",
+    "fileDelimiter": ",",
+    "csvColumnNameDisplayIndicator": true,
+    "reportHeader": "EntityId=<Processing Entity ID>,ReportTypeName=<Report Type>,Frequency=<frequency>,FromDate=<From Date YYYY-MM-DD>,ToDate=<To Date YYYY-MM-DD>,GenerationDate=<Generation Date YYYY-MM-DD>,GenerationTime=<Generation Time HH:MM:SS>",
+    "fileHeader": "BEGIN,EntityId=<Processing Entity ID>,Frequency=<frequency>",
+    "fileTrailer": "END,EntityId=<Processing Entity ID>,Frequency=<frequency>",
+    "languageCode": "en-us"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  
+  // Reporting window (local time): start = today-15d 00:00:00, end = today-1d 23:59:59
+  const pad = (n) => String(n).padStart(2, "0");
+  const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+  bru.setVar("reportingPeriodStartTimestamp", `${daysAgo(15)} 00:00:00`);
+  bru.setVar("reportingPeriodEndTimestamp", `${daysAgo(1)} 23:59:59`);
+}
+
+docs {
+  [Reporting API](https://developer.payments.jpmorgan.com/api/commerce/optimization-protection/reporting/reporting)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

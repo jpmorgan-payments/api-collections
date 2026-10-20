@@ -1,0 +1,49 @@
+meta {
+  name: 11 Multi-Capture 3 of 3 (Final)
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{online_url}}/payments/{{LPMtransactionId}}/captures
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+  platform-id: {{platformId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "amount": 2500,
+    "multiCapture": {
+      "multiCaptureSequenceNumber": 3,
+      "multiCaptureRecordCount": 3,
+      "isFinalCapture": true
+    }
+  }
+}
+
+script:pre-request {
+  bru.setVar("requestId", require("uuid").v4())
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  if(res.body.requestId) {
+  bru.setVar("authLPMRequestId", res.body.requestId);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

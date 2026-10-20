@@ -1,0 +1,297 @@
+meta {
+  name: Generate a report (Exception Details report)
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{reporting_url}}/reports
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "entityType": "PE",
+    "entityIds": [
+      "993193196193"
+    ],
+    "preBuiltConfigurationId": "preset_Unified_Funded_Transaction_Fee_Detail_Report",
+    "reportSections": [
+      {
+        "sectionReportTypeId": "3006",
+        "sectionReportTypeName": "Fee Details",
+        "sectionTitle": "Funded Transaction Fee Detail",
+        "sectionSelectedFields": [
+          {
+            "reportAttributeName": "Activity Date"
+          },
+          {
+            "reportAttributeName": "Entity Identifier"
+          },
+          {
+            "reportAttributeName": "Entity Type Code"
+          },
+          {
+            "reportAttributeName": "Payment Method Code"
+          },
+          {
+            "reportAttributeName": "Merchant Order Number"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code"
+          },
+          {
+            "reportAttributeName": "Foreign Exchange Rate"
+          },
+          {
+            "reportAttributeName": "Funds Transfer Category Text"
+          },
+          {
+            "reportAttributeName": "Fund Transfer Identifier"
+          },
+          {
+            "reportAttributeName": "Fund Transfer Instruction Number"
+          },
+          {
+            "reportAttributeName": "Fund Transfer Effective Date"
+          },
+          {
+            "reportAttributeName": "Acquirer Reference Number"
+          },
+          {
+            "reportAttributeName": "Account Number"
+          },
+          {
+            "reportAttributeName": "Sale/Refund Code"
+          },
+          {
+            "reportAttributeName": "Action Type Code"
+          },
+          {
+            "reportAttributeName": "Secure Bank Account Number"
+          },
+          {
+            "reportAttributeName": "Presentment Amount"
+          },
+          {
+            "alias": "Presentment Amount in Settlement Currency",
+            "reportAttributeName": "Transaction Amount"
+          },
+          {
+            "alias": "Net Settled Sales Amount",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN (\"Settled Sales\",\"Settled Refunds\")"
+              }
+            ]
+          },
+          {
+            "alias": "Interchange & Assessment Fees",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN (\"Interchange & Assessment Fees\")"
+              }
+            ]
+          },
+          {
+            "alias": "Back Up Withholding Adjustments",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN (\"Back Up Withholding Adjustments\")"
+              }
+            ]
+          },
+          {
+            "alias": "Chargeback Adjustments",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN (\"Chargeback Adjustments\")"
+              }
+            ]
+          },
+          {
+            "alias": "Discount Fees",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN (\"Discount Fees\")"
+              }
+            ]
+          },
+          {
+            "alias": "ECP Return Adjustments",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN (\"ECP Return Adjustments\")"
+              }
+            ]
+          },
+          {
+            "alias": "Other Adjustments",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN (\"Other Adjustments\")"
+              }
+            ]
+          },
+          {
+            "alias": "Processing Fees",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN (\"Processing Fees\")"
+              }
+            ]
+          },
+          {
+            "alias": "Reserve Adjustments",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "IN (\"Reserve Adjustments\")"
+              }
+            ]
+          },
+          {
+            "alias": "Other Fees",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "NOT IN (\"Reserve Adjustments\",\"Interchange & Assessment Fees\",\"Back Up Withholding Adjustments\",\"Chargeback Adjustments\",\"Discount Fees\",\"ECP Return Adjustments\",\"Settled Sales\",\"Conveyed Sales\",\"Conveyed Refunds\",\"Settled Refunds\", \"Other Adjustments\",\"Processing Fees\")"
+              }
+            ]
+          },
+          {
+            "alias": "Net Financial Activity",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Text",
+                "aggregateConditionText": "NOT IN (\"Conveyed Sales\",\"Conveyed Refunds\")"
+              }
+            ]
+          }
+        ],
+        "sectionFilterAttributeList": [
+          {
+            "reportAttributeName": "Settled Total Fee Amount",
+            "filterAttributeCode": "!=0.0"
+          },
+          {
+            "reportAttributeName": "Conveyed Settled Code",
+            "filterAttributeCode": "='S'"
+          }
+        ],
+        "sectionSortOrderList": [
+          {
+            "reportAttributeName": "Entity Identifier",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Payment Method Code",
+            "sortOrderCode": "desc"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code",
+            "sortOrderCode": "asc"
+          }
+        ]
+      }
+    ],
+    "frequencyConfig": {
+      "scheduleFrequency": "Adhoc",
+      "reportingPeriodStartTimestamp": "{{reportingPeriodStartTimestamp}}",
+      "reportingPeriodEndTimestamp": "{{reportingPeriodEndTimestamp}}"
+    },
+    "reportConfigurationName": "Funded Transaction Fee Details",
+    "reportName": "Funded Transaction Fee Details",
+    "reportConfigType": "PreBuilt",
+    "fileDelimiter": ",",
+    "csvColumnNameDisplayIndicator": true,
+    "splitIndicator": false,
+    "splitChildEntitiesIndicator": false,
+    "reportHeader": "EntityId=<Processing Entity ID>,ReportTypeName=<Report Type>,Frequency=<frequency>,FromDate=<From Date YYYY-MM-DD>,ToDate=<To Date YYYY-MM-DD>,GenerationDate=<Generation Date YYYY-MM-DD>,GenerationTime=<Generation Time HH:MM:SS>",
+    "fileHeader": "BEGIN,EntityId=<Processing Entity ID>,Frequency=<frequency>",
+    "fileTrailer": "END,EntityId=<Processing Entity ID>,Frequency=<frequency>",
+    "languageCode": "en-us"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  
+  // Reporting window (local time): start = today-15d 00:00:00, end = today-1d 23:59:59
+  const pad = (n) => String(n).padStart(2, "0");
+  const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+  bru.setVar("reportingPeriodStartTimestamp", `${daysAgo(15)} 00:00:00`);
+  bru.setVar("reportingPeriodEndTimestamp", `${daysAgo(1)} 23:59:59`);
+}
+
+docs {
+  [Reporting API](https://developer.payments.jpmorgan.com/api/commerce/optimization-protection/reporting/reporting)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

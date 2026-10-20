@@ -1,0 +1,116 @@
+meta {
+  name: 02 - Auth-Capture CIT (CUSE)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{online_url}}/payments
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "captureMethod": "NOW",
+    "amount": 10000,
+    "currency": "USD",
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "{{$randomProduct}}",
+        "version": "2.0"
+      }
+    },
+    "paymentMethodType": {
+      "card": {
+        "accountNumberType": "PAN",
+        "accountNumber": "{{mcTestCardNum}}",
+        "expiry": {
+          "month": 5,
+          "year": 2027
+        },
+        "cvv": {{cvv}}
+      }
+    },
+    "accountHolder": {
+      "fullName": "{{$randomFullName}}",
+      "billingAddress": {
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "{{$randomCountryCode}}",
+        "postalCode": "33626"
+      }
+    },
+    "initiatorType": "CARDHOLDER",
+    "accountOnFile": "STORED",
+    "isAmountFinal": true
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  // Set transactionId to variable for further use
+  if (res.body.transactionId) {
+    bru.setVar("transactionId", res.body.transactionId);
+  }
+
+  // Set requestId to variable for further use
+  if (res.body.requestId) {
+    bru.setVar("authRequestId", res.body.requestId);
+  }
+
+  const networkResponse = res.body?.paymentMethodType?.card?.networkResponse || {};
+
+  // Set Network Transaction ID to variable for further use
+  if (networkResponse.networkTransactionId) {
+    bru.setVar("networkTransactionId", networkResponse.networkTransactionId);
+  }
+
+  // Set Mastercard Transaction Link ID (TLID) of this transaction
+  bru.setVar("transactionLinkId", networkResponse.transactionLinkId || "");
+}
+
+tests {
+  test("Transaction approved", function() {
+    expect(res.body.responseStatus).to.equal("SUCCESS");
+  });
+
+  test("Mastercard returned a new 22-character transactionLinkId", function() {
+    const tlid = res.body.paymentMethodType.card.networkResponse.transactionLinkId;
+    expect(tlid).to.be.a("string");
+    expect(tlid).to.match(/^[A-Za-z0-9_-]{22}$/);
+  });
+
+  test("CIT does not carry an originalTransactionLinkId", function() {
+    expect(res.body.paymentMethodType.card.originalTransactionLinkId).to.be.undefined;
+  });
+}
+
+docs {
+  Returning cardholder checkout with the stored card - CIT, so nothing to link.
+  [Mastercard Transaction Link Identifier](https://developer.payments.jpmorgan.com/docs/commerce/online-payments/capabilities/online-payments/payment-methods/cards/mastercard-tlid#transaction-types)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

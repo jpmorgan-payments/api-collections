@@ -137,3 +137,5 @@ target
 
 application-local.yml
 .idea
+
+.vscode

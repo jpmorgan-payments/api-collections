@@ -1,0 +1,80 @@
+meta {
+  name: 16 Auth-Capture (Apple Pay Bundle)
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{online_url}}/payments
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "captureMethod": "MANUAL",
+    "amount": 1000,
+    "isAmountFinal": true,
+    "currency": "EUR",
+    "initiatorType": "CARDHOLDER",
+    "accountOnFile": "NOT_STORED",
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "{{$randomProduct}}",
+        "version": "2.0"
+      }
+    },
+    "paymentMethodType": {
+      "applepay": {
+        "latLong": "1,1",
+        "encryptedPaymentBundle": {
+          "encryptedPayload": "KVGyiWwjbsvV+N0x9H5flo932bSeELQlO9cePGyb4O0OofXPccnQu8cLVwna5Rq/jVY/Tsa8RTzUmZEaB8svt+EMlnXqV6OtQUTKOwARTHcsSTU97nFlFLdEPVdDB0s9e/L44Jrkbw3htqnvfkXKjDu/hJ7CM/EBYzmPU5WIG6ovoGow5unpUwWn4d+IEayxTA50OjZty+y7D/2fY6fMWMxmmgIp1B/MzOB7eLW40uk2S0qCtppgonmQxYrjVQSlZQOmuPphNig+6XkMXRcDlR32m/BUCe8xCZhJWVMkIX99po6VeqsLQOW9ytjA8H6A+I6sYQGwSoAyapqRl+5GDkry+y2mw2lnkmZvI2rDMmKklgZD3KQzIhf+f3mFNCe8nW4Gokk4oQXSzNma8pkrhUn6uqa8Zrcj4VIWDOLrfiEu41KzU2uzJwxrDNEaRjB5sLVW1BaRt0QnnK/5WxeSwDL/gv/sk/+UAXFMrlIsxLqDAG7hkShtjV3LWKWbxQBZf/JuzQsewcK1z2IOaTuCrurI5pKfmiex7tzSFO0PZw6MxOkxTtBLSYMeIOZ+Iluz885O3+bCWZpmCBD/6kL3rjK7nHWDC5BC44h3WWyw+EY88yBn1efzBkh2xU9rXZhNsApxcNByWo/pLMLbcbiGkaEp6jsGELg31vTwLDMvOWfP/DxI6SgtQiOjXq6ijxXNqqoeqIhs8yftMlIyiX33xNev3YGyiUEdYRaWdKySHtXnytyQizgc+l0wz8VN1N+Clunf9ESy7Mdeu8W/iAwwgowE+UDODfMEdKAzauDFMMqQKdezphXawrRu6grx68Br82ff5/u9rfcl/3yvcmjoRYjqrmcgrUtHATipEAdyKXQOMOfShQJj5OFYsPAirtWlLu4QdKBZ2RjKiMEqxzwaA989/Vg4vDoPzfNSIiPH0WCx4fI6hp8H8FRw2FshZ8YLZ03OZ4XqwzKoiO66wOet6BDC+FqCumVdkTk3hMtnmRNiWkDi+PH2DYRkGXwv7qyk5fD3w+jT5qcciGWULNVdnE76v8T2Q32MGM4OTPVO/PR2RbUhR86nHelZs0oGluLt7Qed4eojHtpKdUJ4TGrtr2Y+aK0PK9dfJmFspHjYg3Y7gKwzpEHmNOiE7tcWprZv5WK7o5IDT6tkXX/Y0JMgOQ0DRSO84G7xpqgbpZg5UqGKxKNcwYEuDr5D40qvehApA6Z4Ccjoy6djr3YbYAPKAGLkGOIFemj7pnMEIK9w61Op0ZlGb4JANKpOp3vSyZaTq6SPvcjZgqI=",
+          "encryptedPaymentHeader": {
+            "ephemeralPublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEpW8dBQ62HVRoMrTXEb1LnDx65SMdKC/pSzB9r2kc2ZQXlrsakDOpyM4Ck6dkoDa0fTOHdWL4i+tFVfJ7fMtfKw==",
+            "publicKeyHash": "Fv4E8Vgyf1kpIjyMgDqOxaJiQGsUBFr3VyYSZwioEoM=",
+            "walletTransactionId": "27ed51c15512070be3058fb6070c2e63ddd69ca2e75b3187e2af6faf92ba2901",
+            "walletApplicationData": "27ed51c15512070be3058fb6070c2e63ddd69ca2e75b3187e2af6faf92ba2901"
+          },
+          "signature": "MIAGCSqGSIb3DQEHAqCAMIACAQExDTALBglghkgBZQMEAgEwCwYJKoZIhvcNAQcBoIAwggFiMIIBCKADAgECAgYBXWU4+wEwCgYIKoZIzj0EAwMwODEhMB8GA1UEAwwYUGF5bWVudGVjaCBNb2JpbGUgU0RLIENBMRMwEQYDVQQKDApQYXltZW50ZWNoMB4XDTE3MDcyMTEyNTY1OVoXDTM0MDcyMTEyNTY1OVowODEhMB8GA1UEAwwYUGF5bWVudGVjaCBNb2JpbGUgU0RLIENBMRMwEQYDVQQKDApQYXltZW50ZWNoMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQq5cwf1DdtmV6R5O4iaiPE+4dCfEDiMgqIXAXfA4fqdBj3hqw6YssvCzckP22/YzY/umlSX3rWvXlrDjwaevZTAKBggqhkjOPQQDAwNIADBFAiEAi9wsxbzfCB28fQyGLVklr3cJXltjpG7kYpj/S81vUXgCIE7hs86pbthHwaUnrHzbe/H4ABNODmChxgauPy2q4+eNAAAxggFEMIIBQAIBATBCMDgxITAfBgNVBAMMGFBheW1lbnRlY2ggTW9iaWxlIFNESyBDQTETMBEGA1UECgwKUGF5bWVudGVjaAIGAV1lOPsBMAsGCWCGSAFlAwQCAaCBkzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yNjA5MDkxMDI2MTdaMCgGCSqGSIb3DQEJNDEbMBkwCwYJYIZIAWUDBAIBoQoGCCqGSM49BAMCMC8GCSqGSIb3DQEJBDEiBCAgzdvbZ30ngd7dDN4l1+bAT9igdcIn/M1VDofcSP3zfjAKBggqhkjOPQQDAgRIMEYCIQCDy/p1c3QHJt4aBcWD/gMfrKXTkFWOFQhnqRhP/ZAi5gIhAKDmu+0XoEaTH3pmUUao5CgvuehuxdFdyJmtsLepUTI0AAAAAAAA",
+          "protocolVersion": "EC_v1"
+        }
+      }
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  // Set transactionId to variable for further use
+  if(res.body.transactionId) {
+  bru.setVar("transactionId", res.body.transactionId);
+  }
+  
+  // Set requestId to variable for further use
+  if(res.body.requestId) {
+  bru.setVar("authRequestId", res.body.requestId);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

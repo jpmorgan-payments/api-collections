@@ -1,0 +1,303 @@
+meta {
+  name: Generate a report (Authorization Details report)
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{reporting_url}}/reports
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "entityType": "PE",
+    "entityIds": [
+      "993193196193"
+    ],
+    "preBuiltConfigurationId": "preset_Unified_Authorization_Report",
+    "reportSections": [
+      {
+        "sectionReportTypeId": "3001",
+        "sectionReportTypeName": "Transaction Details",
+        "sectionTitle": "Authorization Summary",
+        "sectionSelectedFields": [
+          {
+            "alias": "Record Type",
+            "constantValueText": "Authorization Summary"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code"
+          },
+          {
+            "reportAttributeName": "MOP Type"
+          },
+          {
+            "alias": "Response Code",
+            "reportAttributeName": "PTI Authorization Response Code"
+          },
+          {
+            "alias": "Response Description",
+            "reportAttributeName": "PTI Authorization Response Code Description"
+          },
+          {
+            "reportAttributeName": "Firm Authorization Approval Code"
+          },
+          {
+            "alias": "Total Transaction Count",
+            "reportAttributeName": "Merchant Order Number",
+            "aggregateOperationText": "count",
+            "conditionalAggregateIndicator": false
+          },
+          {
+            "alias": "Amount",
+            "reportAttributeName": "Authorization Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": false
+          },
+          {
+            "alias": "Count of Declined Transactions",
+            "reportAttributeName": "Transaction Decline Count",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": false
+          },
+          {
+            "alias": "Authorization Total Count %",
+            "customCalculationText": "% of",
+            "customCalculationOn": "Total Transaction Count",
+            "groupBy": [
+              "MOP Type"
+            ]
+          },
+          {
+            "alias": "Authorization Status %",
+            "customCalculationText": "% of",
+            "customCalculationOn": "Total Transaction Count",
+            "groupBy": [
+              "MOP Type",
+              "PTI Authorization Response Code"
+            ]
+          },
+          {
+            "alias": "Transaction Decline %",
+            "customCalculationText": "% of",
+            "customCalculationOn": "Count of Declined Transactions",
+            "groupBy": [
+              "MOP Type",
+              "PTI Authorization Response Code"
+            ]
+          }
+        ],
+        "sectionFilterAttributeList": [
+          {
+            "reportAttributeName": "Transaction Type Text",
+            "filterAttributeCode": "NOT IN (\"REJECTS\")"
+          },
+          {
+            "reportAttributeName": "Merchant Action Code Text",
+            "filterAttributeCode": "IN (\"DEPOSITS\",\"AUTHORIZATIONS\")"
+          },
+          {
+            "reportAttributeName": "Authorization Amount",
+            "filterAttributeCode": "IS NOT NULL"
+          }
+        ],
+        "sectionSortOrderList": [
+          {
+            "reportAttributeName": "MOP Type",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "PTI Authorization Response Code",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code",
+            "sortOrderCode": "asc"
+          }
+        ]
+      },
+      {
+        "sectionReportTypeId": "3001",
+        "sectionReportTypeName": "Transaction Details",
+        "sectionTitle": "Authorization Details",
+        "sectionSelectedFields": [
+          {
+            "alias": "Record Type",
+            "constantValueText": "Authorization Details"
+          },
+          {
+            "reportAttributeName": "Entity Identifier"
+          },
+          {
+            "reportAttributeName": "Entity Type Code"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code"
+          },
+          {
+            "reportAttributeName": "Payment Method Code"
+          },
+          {
+            "reportAttributeName": "Merchant Order Number"
+          },
+          {
+            "reportAttributeName": "Merchant Action Code Text"
+          },
+          {
+            "reportAttributeName": "Authorization Amount"
+          },
+          {
+            "reportAttributeName": "Account Number"
+          },
+          {
+            "reportAttributeName": "Credit Card Expiration Year Month Number"
+          },
+          {
+            "reportAttributeName": "Transaction Type Text"
+          },
+          {
+            "reportAttributeName": "Authorization Timestamp"
+          },
+          {
+            "reportAttributeName": "Authorization Code"
+          },
+          {
+            "reportAttributeName": "Payment Brand Auth Response"
+          },
+          {
+            "reportAttributeName": "Payment Brand Response Code Category"
+          },
+          {
+            "reportAttributeName": "PTI Authorization Response Code"
+          },
+          {
+            "reportAttributeName": "Authorization Initiator"
+          },
+          {
+            "reportAttributeName": "Authorization Source Code"
+          },
+          {
+            "reportAttributeName": "POS Authentication Source"
+          },
+          {
+            "reportAttributeName": "Merchant Category Code"
+          },
+          {
+            "reportAttributeName": "Country Of Issuance"
+          },
+          {
+            "reportAttributeName": "Digital Token Method Text"
+          },
+          {
+            "reportAttributeName": "Prepaid Card Type Code"
+          },
+          {
+            "reportAttributeName": "Commercial Card Code"
+          },
+          {
+            "reportAttributeName": "Card Usage Type"
+          },
+          {
+            "reportAttributeName": "Payment Transaction Identifier"
+          },
+          {
+            "reportAttributeName": "Terminal Identifier"
+          }
+        ],
+        "sectionFilterAttributeList": [
+          {
+            "reportAttributeName": "Merchant Action Code Text",
+            "filterAttributeCode": "IN (\"DEPOSITS\",\"AUTHORIZATIONS\")"
+          },
+          {
+            "reportAttributeName": "Authorization Amount",
+            "filterAttributeCode": "IS NOT NULL"
+          }
+        ],
+        "sectionSortOrderList": [
+          {
+            "reportAttributeName": "Presentment Currency Code",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Entity Identifier",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Payment Method Code",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Merchant Order Number",
+            "sortOrderCode": "asc"
+          }
+        ]
+      }
+    ],
+    "frequencyConfig": {
+      "scheduleFrequency": "Adhoc",
+      "reportingPeriodStartTimestamp": "{{reportingPeriodStartTimestamp}}",
+      "reportingPeriodEndTimestamp": "{{reportingPeriodEndTimestamp}}"
+    },
+    "reportConfigurationName": "Authorization Details",
+    "reportName": "Authorization Details",
+    "reportConfigType": "PreBuilt",
+    "fileDelimiter": ",",
+    "csvColumnNameDisplayIndicator": true,
+    "splitIndicator": false,
+    "splitChildEntitiesIndicator": false,
+    "reportHeader": "EntityId=<Processing Entity ID>,ReportTypeName=<Report Type>,Frequency=<frequency>,FromDate=<From Date YYYY-MM-DD>,ToDate=<To Date YYYY-MM-DD>,GenerationDate=<Generation Date YYYY-MM-DD>,GenerationTime=<Generation Time HH:MM:SS>",
+    "fileHeader": "BEGIN,EntityId=<Processing Entity ID>,Frequency=<frequency>",
+    "fileTrailer": "END,EntityId=<Processing Entity ID>,Frequency=<frequency>",
+    "languageCode": "en-us"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  
+  // Reporting window (local time): start = today-15d 00:00:00, end = today-1d 23:59:59
+  const pad = (n) => String(n).padStart(2, "0");
+  const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+  bru.setVar("reportingPeriodStartTimestamp", `${daysAgo(15)} 00:00:00`);
+  bru.setVar("reportingPeriodEndTimestamp", `${daysAgo(1)} 23:59:59`);
+}
+
+docs {
+  [Reporting API](https://developer.payments.jpmorgan.com/api/commerce/optimization-protection/reporting/reporting)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

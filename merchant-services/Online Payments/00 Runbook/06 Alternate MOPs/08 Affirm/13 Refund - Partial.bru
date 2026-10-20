@@ -1,0 +1,57 @@
+meta {
+  name: 13 Refund - Partial
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{online_url}}/refunds
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+  platform-id: {{platformId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+      "amount": 5000,
+      "currency": "USD",
+      "paymentMethodType": {
+          "transactionReference": {
+              "transactionReferenceId": "{{LPMtransactionId}}"
+          }
+      },
+      "merchant": {
+          "merchantSoftware": {
+              "companyName": "{{$randomCompanyName}}",
+              "productName": "{{$randomProduct}}",
+              "version": 1.235
+          }
+      }
+  }
+}
+
+script:pre-request {
+  bru.setVar("requestId", require("uuid").v4())
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  if(res.body.requestId) {
+  bru.setVar("authLPMRequestId", res.body.requestId);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

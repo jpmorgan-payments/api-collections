@@ -1,0 +1,97 @@
+meta {
+  name: PBB
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{checkout_url}}/intent
+  body: json
+  auth: inherit
+}
+
+headers {
+  merchantId: {{merchantId}}
+  requestId: {{requestId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "captureMethod": "NOW",
+    "cart": {
+      "totalTransactionAmount": 1000
+    },
+    "currencyCode": "USD",
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "Roland's Train - Checkout JPMP"
+      }
+    },
+    "checkoutOptions": {
+      "authorization": {
+        "authorizationType": "AUTH_METHOD_CART_AMOUNT"
+      },
+      "capture": {
+        "captureMethod": "CAPTURE_METHOD_NOW"
+      },
+      "consumerProfileOptions": {
+        "isSaveConsumerProfile": "false"
+      }
+    },
+    "initiatorType": "CARDHOLDER",
+    "accountOnFile": "NOT_STORED",
+    "merchantOrderNumber": "{{$randomBankAccount}}",
+    "accountHolder": {
+      "firstName": "{{$randomFirstName}}",
+      "lastName": "{{$randomLastName}}",
+      "fullName": "{{$randomFullName}}",
+      "email": "{{$randomEmail}}"
+    },
+    "shipTo": {
+      "shippingDescription": "C",
+      "firstName": "{{$randomFirstName}}",
+      "lastName": "{{$randomLastName}}",
+      "fullName": "{{$randomFullName}}",
+      "email": "{{$randomEmail}}"
+    },
+    "paymentMethodType": {
+      "ach": {
+        "accountNumber": "{{accountNumber}}",
+        "accountType": "CHECKING",
+        "paymentType": "WEB"
+      }
+    },
+    "isAmountFinal": true,
+    "risk": {
+      "consumerDeviceInfo": {
+        "deviceFingerprintSessionId": "9a43a16c-ec12-4e7a-ba45-d324eb2b1062"
+      }
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4().slice(1,20))
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  
+  const moment = require("moment");
+  
+  bru.setVar("timenow", moment().utc().format());
+  
+  bru.setVar("timebefore", moment().utc().subtract(2,'d').format());
+        
+                
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

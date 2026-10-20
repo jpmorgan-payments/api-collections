@@ -1,0 +1,54 @@
+meta {
+  name: 08 Capture (Partial)
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{online_url}}/payments/{{LPMtransactionId}}/captures
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+      "captureMethod": "NOW",
+      "amount": "1000",
+      "isAmountFinal": true
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  // Set transactionId to variable for further use
+  if(res.body.transactionId) {
+  bru.setVar("transactionId", res.body.transactionId);
+  }
+  
+  // Set requestId to variable for further use
+  if(res.body.requestId) {
+  bru.setVar("captureRequestId", res.body.requestId);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

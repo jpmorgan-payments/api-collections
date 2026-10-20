@@ -1,0 +1,156 @@
+meta {
+  name: Generate a report (daily)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{reporting_url}}/reports
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "entityIds": [
+      "993193196193"
+    ],
+    "reportSections": [
+      {
+        "sectionReportTypeName": "Settlement Details",
+        "sectionReportTypeId": "3002",
+        "sectionSelectedFields": [
+          {
+            "alias": "Record Type",
+            "constantValueText": "Settlement Details Report"
+          },
+          {
+            "reportAttributeName": "Entity Identifier"
+          },
+          {
+            "reportAttributeName": "Entity Name"
+          },
+          {
+            "reportAttributeName": "Entity Type Code"
+          },
+          {
+            "reportAttributeName": "Transaction Processing Entity Identifier"
+          },
+          {
+            "reportAttributeName": "Company External Identifier"
+          },
+          {
+            "reportAttributeName": "Payment Method Code"
+          },
+          {
+            "reportAttributeName": "Payment Method Code Description Text"
+          },
+          {
+            "reportAttributeName": "Card Usage Type"
+          },
+          {
+            "reportAttributeName": "Card Product Type"
+          },
+          {
+            "reportAttributeName": "Transaction Timestamp"
+          },
+          {
+            "reportAttributeName": "Submission Timestamp"
+          },
+          {
+            "reportAttributeName": "Account Number"
+          },
+          {
+            "reportAttributeName": "Authorization Code"
+          },
+          {
+            "reportAttributeName": "Transaction Identifier"
+          },
+          {
+            "reportAttributeName": "Merchant Order Number"
+          },
+          {
+            "reportAttributeName": "Submission Identifier"
+          },
+          {
+            "reportAttributeName": "Fund Transfer Identifier"
+          },
+          {
+            "reportAttributeName": "Presentment Amount"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code"
+          },
+          {
+            "reportAttributeName": "Settlement Amount"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code"
+          },
+          {
+            "reportAttributeName": "Settled Total Assessment Amount"
+          },
+          {
+            "reportAttributeName": "Settled Total Interchange Amount"
+          },
+          {
+            "reportAttributeName": "Settled Total Other Amount"
+          }
+        ],
+        "sectionSortOrderList": [
+          {
+            "reportAttributeName": "Payment Method Code",
+            "sortOrderCode": "asc"
+          }
+        ],
+        "sectionFilterAttributeList": [
+          {
+            "reportAttributeName": "Merchant Action Code",
+            "filterAttributeCode": "=\"AU\""
+          }
+        ]
+      }
+    ],
+    "fileDelimiter": ",",
+    "reportConfigurationName": "Settlement Details Report",
+    "reportFileName": "Settlement Details Report,<Processing Entity ID>.<Report Type>.<frequency>.<From Date YYYY-MM-DD>.<To Date YYYY-MM-DD>",
+    "reportHeader": "HDSR,<Processing Entity ID>,<Report Type>,<frequency>,<From Date YYYY-MM-DD>,<To Date YYYY-MM-DD>,<Generation Date YYYY-MM-DD>,<Generation Time HH:MM:SS>",
+    "fileHeader": "BEGIN,ProcessingEntityId=<Processing Entity ID>,Frequency=<frequency>",
+    "fileTrailer": "END,ProcessingEntityId=<Processing Entity ID>,Frequency=<frequency>",
+    "csvColumnNameDisplayIndicator": true,
+    "reportConfigStatus": "active",
+    "reportName": "Settlement Details Report",
+    "frequencyConfig": {
+      "scheduleFrequency": "daily",
+      "reportFileScheduledTime": "09:00:00",
+      "reportingPeriodStartTime": "03:00:00"
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+docs {
+  [Reporting API](https://developer.payments.jpmorgan.com/api/commerce/optimization-protection/reporting/reporting)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
