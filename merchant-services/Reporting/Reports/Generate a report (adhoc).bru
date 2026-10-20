@@ -1,0 +1,58 @@
+meta {
+  name: Generate a report (adhoc)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{reporting_url}}/reports
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "entityType": "PE",
+    "entityIds": [
+      "993193196193"
+    ],
+    "reportSections": [
+      {
+        "sectionReportTypeId": "3002",
+        "sectionReportTypeName": "Settlement Details"
+      }
+    ],
+    "frequencyConfig": {
+      "scheduleFrequency": "adhoc",
+      "reportingPeriodStartTimestamp": "2026-07-09 02:00:00",
+      "reportingPeriodEndTimestamp": "2026-07-28 01:59:59"
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+docs {
+  [Reporting API](https://developer.payments.jpmorgan.com/api/commerce/optimization-protection/reporting/reporting)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

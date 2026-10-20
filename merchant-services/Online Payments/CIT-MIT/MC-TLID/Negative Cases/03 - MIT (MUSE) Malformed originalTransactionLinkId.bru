@@ -1,0 +1,107 @@
+meta {
+  name: 03 - MIT (MUSE) Malformed originalTransactionLinkId
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{online_url}}/payments
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "captureMethod": "NOW",
+    "amount": 5000,
+    "currency": "USD",
+    "merchantOrderNumber": "{{merchantOrderNumber}}",
+    "merchant": {
+      "merchantSoftware": {
+        "companyName": "{{$randomCompanyName}}",
+        "productName": "{{$randomProduct}}",
+        "version": "2.0"
+      }
+    },
+    "paymentMethodType": {
+      "card": {
+        "accountNumberType": "PAN",
+        "accountNumber": "{{mcTestCardNum}}",
+        "originalNetworkTransactionId": "{{citNetworkTransactionId}}",
+        "originalTransactionLinkId": "INVALID TLID!@#$%^&*()+",
+        "expiry": {
+          "month": 5,
+          "year": 2027
+        }
+      }
+    },
+    "accountHolder": {
+      "fullName": "{{$randomFullName}}",
+      "billingAddress": {
+        "line1": "{{$randomStreetAddress}}",
+        "city": "{{$randomCity}}",
+        "state": "{{$randomCountryCode}}",
+        "postalCode": "33626"
+      }
+    },
+    "initiatorType": "MERCHANT",
+    "accountOnFile": "STORED",
+    "isAmountFinal": true
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  // Set transactionId to variable for further use
+  if (res.body.transactionId) {
+    bru.setVar("transactionId", res.body.transactionId);
+  }
+
+  // Set requestId to variable for further use
+  if (res.body.requestId) {
+    bru.setVar("authRequestId", res.body.requestId);
+  }
+
+  const networkResponse = res.body?.paymentMethodType?.card?.networkResponse || {};
+
+  // Set Network Transaction ID to variable for further use
+  if (networkResponse.networkTransactionId) {
+    bru.setVar("networkTransactionId", networkResponse.networkTransactionId);
+  }
+
+  // Set Mastercard Transaction Link ID (TLID) of this transaction
+  bru.setVar("transactionLinkId", networkResponse.transactionLinkId || "");
+}
+
+tests {
+  test("Malformed TLID is rejected", function() {
+    expect(res.getStatus()).to.be.within(400, 499);
+  });
+}
+
+docs {
+  TLID is alphanumeric with `-` and `_` only. Expect a 4xx validation error.
+  [Mastercard Transaction Link Identifier](https://developer.payments.jpmorgan.com/docs/commerce/online-payments/capabilities/online-payments/payment-methods/cards/mastercard-tlid#transaction-types)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

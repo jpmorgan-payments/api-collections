@@ -1,0 +1,279 @@
+meta {
+  name: Generate a report (Deposit Activity Summary report)
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{reporting_url}}/reports
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "entityType": "PE",
+    "entityIds": [
+      "993193196193"
+    ],
+    "preBuiltConfigurationId": "preset_Unified_Deposit_Detail_Report",
+    "reportSections": [
+      {
+        "sectionReportTypeId": "3003",
+        "sectionReportTypeName": "Submission Details",
+        "sectionSelectedFields": [
+          {
+            "reportAttributeName": "Entity Identifier"
+          },
+          {
+            "reportAttributeName": "Entity Type Code"
+          },
+          {
+            "reportAttributeName": "Submission Date"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code"
+          },
+          {
+            "reportAttributeName": "Transaction Division External Identifier"
+          },
+          {
+            "reportAttributeName": "Payment Method Code"
+          },
+          {
+            "reportAttributeName": "Merchant Order Number"
+          },
+          {
+            "reportAttributeName": "Account Number"
+          },
+          {
+            "reportAttributeName": "Credit Card Expiration Year Month Number"
+          },
+          {
+            "alias": "Transaction Amount in Presentment Currency",
+            "reportAttributeName": "Presentment Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Code",
+                "aggregateConditionText": "IN(\"SALE\",\"REF\")"
+              }
+            ]
+          },
+          {
+            "reportAttributeName": "Merchant Action Code"
+          },
+          {
+            "reportAttributeName": "Action Type Code Text"
+          },
+          {
+            "reportAttributeName": "Authorization Date"
+          },
+          {
+            "reportAttributeName": "Country of Issuance"
+          },
+          {
+            "reportAttributeName": "Transaction Type Code"
+          },
+          {
+            "reportAttributeName": "Transaction Type Text"
+          },
+          {
+            "reportAttributeName": "Merchant Category Code"
+          },
+          {
+            "reportAttributeName": "Digital Token Method Code"
+          },
+          {
+            "reportAttributeName": "Digital Wallet Brand"
+          },
+          {
+            "alias": "Interchange Qualification Code",
+            "reportAttributeName": "Interchange Qualification Code",
+            "aggregateOperationText": "max",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Fee Text",
+                "aggregateConditionText": "IN(\"Interchange\")"
+              }
+            ]
+          },
+          {
+            "alias": "Interchange Unit Fee",
+            "reportAttributeName": "Unit Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Fee Text",
+                "aggregateConditionText": "IN(\"Interchange\")"
+              }
+            ]
+          },
+          {
+            "alias": "Interchange Face Value % Fee",
+            "reportAttributeName": "Fee Rate",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Fee Text",
+                "aggregateConditionText": "IN(\"Interchange\")"
+              }
+            ]
+          },
+          {
+            "alias": "Total Interchange Amount",
+            "reportAttributeName": "Raw Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Code",
+                "aggregateConditionText": "IN(\"IA\")"
+              },
+              {
+                "aggregateConditionAttributeName": "Charge Subcategory Text",
+                "aggregateConditionText": "IN(\"Interchange Fees\")"
+              }
+            ]
+          },
+          {
+            "alias": "Total Assessment Amount",
+            "reportAttributeName": "Raw Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Code",
+                "aggregateConditionText": "IN(\"IA\")"
+              },
+              {
+                "aggregateConditionAttributeName": "Charge Subcategory Text",
+                "aggregateConditionText": "IN (\"Assessment Fees\")"
+              }
+            ]
+          },
+          {
+            "alias": "Other Debit Passthrough Fees",
+            "reportAttributeName": "Raw Settled Total Fee Amount",
+            "aggregateOperationText": "sum",
+            "conditionalAggregateIndicator": true,
+            "conditionalAggregateFilterList": [
+              {
+                "aggregateConditionAttributeName": "Charge Category Code",
+                "aggregateConditionText": "IN(\"PFEE\")"
+              },
+              {
+                "aggregateConditionAttributeName": "Charge Subcategory Text",
+                "aggregateConditionText": "IN(\"Debit Pass Thru Fees\")"
+              }
+            ]
+          },
+          {
+            "reportAttributeName": "Merchant Information Description"
+          },
+          {
+            "reportAttributeName": "Surcharge Amount"
+          },
+          {
+            "reportAttributeName": "Bank Sort Code"
+          },
+          {
+            "reportAttributeName": "Card Usage Type"
+          }
+        ],
+        "sectionFilterAttributeList": [
+          {
+            "reportAttributeName": "Online Submission Indicator",
+            "filterAttributeCode": "=\"N\""
+          },
+          {
+            "reportAttributeName": "Merchant Action Text",
+            "filterAttributeCode": "=\"DEPOSITS\""
+          },
+          {
+            "reportAttributeName": "Transaction Type Text",
+            "filterAttributeCode": "!=\"Rejects\""
+          },
+          {
+            "reportAttributeName": "Transaction Deposit Indicator",
+            "filterAttributeCode": "=\"Y\""
+          },
+          {
+            "reportAttributeName": "Merchant Order Number",
+            "filterAttributeCode": "!=\"NULL\""
+          }
+        ],
+        "sectionSortOrderList": [
+          {
+            "reportAttributeName": "Submission Date",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Entity Identifier",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Payment Method Code",
+            "sortOrderCode": "desc"
+          }
+        ]
+      }
+    ],
+    "frequencyConfig": {
+      "scheduleFrequency": "Adhoc",
+      "reportingPeriodStartTimestamp": "{{reportingPeriodStartTimestamp}}",
+      "reportingPeriodEndTimestamp": "{{reportingPeriodEndTimestamp}}"
+    },
+    "reportConfigurationName": "Deposit Detail",
+    "reportName": "Deposit Detail",
+    "reportConfigType": "PreBuilt",
+    "fileDelimiter": ",",
+    "csvColumnNameDisplayIndicator": true,
+    "splitIndicator": false,
+    "splitChildEntitiesIndicator": false,
+    "reportHeader": "EntityId=<Processing Entity ID>,ReportTypeName=<Report Type>,Frequency=<frequency>,FromDate=<From Date YYYY-MM-DD>,ToDate=<To Date YYYY-MM-DD>,GenerationDate=<Generation Date YYYY-MM-DD>,GenerationTime=<Generation Time HH:MM:SS>",
+    "fileHeader": "BEGIN,EntityId=<Processing Entity ID>,Frequency=<frequency>",
+    "fileTrailer": "END,EntityId=<Processing Entity ID>,Frequency=<frequency>",
+    "languageCode": "en-us"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  
+  // Reporting window (local time): start = today-15d 00:00:00, end = today-1d 23:59:59
+  const pad = (n) => String(n).padStart(2, "0");
+  const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+  bru.setVar("reportingPeriodStartTimestamp", `${daysAgo(15)} 00:00:00`);
+  bru.setVar("reportingPeriodEndTimestamp", `${daysAgo(1)} 23:59:59`);
+}
+
+docs {
+  [Reporting API](https://developer.payments.jpmorgan.com/api/commerce/optimization-protection/reporting/reporting)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

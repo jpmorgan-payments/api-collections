@@ -1,0 +1,111 @@
+meta {
+  name: Create Profile (SEPA)
+  type: http
+  seq: 23
+}
+
+post {
+  url: {{consumerprofile_url}}/consumer-profiles
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  requestIdentifier: {{requestId}}
+  merchantIdentifier: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "externalConsumerProfileIdentifier": "{{merchantOrderNumber}}",
+    "cardOnFileReferenceNumber": "123",
+    "firstName": "{{$randomFirstName}}",
+    "lastName": "{{$randomLastName}}",
+    "profileStatus": "ACTIVE",
+    "consumerProfileAddresses": [
+      {
+        "firstName": "{{$randomFirstName}}",
+        "lastName": "{{$randomLastName}}",
+        "consumerAssignedAddressName": "Work",
+        "primaryAddressIndicator": true,
+        "addressType": "SHIPPING",
+        "line1": "{{$randomStreetAddress}}",
+        "line2": "Apt 123",
+        "city": "{{$randomCity}}",
+        "state": "PA",
+        "postalCode": "19342",
+        "countryCode": "USA",
+        "addressStatus": "ACTIVE"
+      }
+    ],
+    "profilePaymentMethod": {
+      "sepaList": [
+        {
+          "internationalBankAccountNumber": "DE62370400440554416800",
+          "internationalBusinessIdentifierCode": "COBADEFFXXX",
+          "accountStatus": "ACTIVE",
+          "firstName": "{{$randomFirstName}}",
+          "lastName": "{{$randomLastName}}",
+          "mandateList": [
+            {
+              "mandateId": "{{$randomInt}}_",
+              "mandateType": "{{$randomAdjective}}",
+              "mandateSignatureDate": "2026-08-26"
+            }
+          ]
+        }
+      ]
+    },
+    "communication": {
+      "phoneList": [
+        {
+          "phoneNumber": {{phoneNumber}},
+          "countryCode": "840",
+          "phoneNumberType": "Home"
+        }
+      ],
+      "emailList": [
+        {
+          "emailAddress": "{{$randomEmail}}",
+          "emailAddressType": "Home"
+        }
+      ]
+    }
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+tests {
+  // Set consumer profile id to variable for further use
+  if(res.body.consumerProfileId) {
+  bru.setVar("consumerprofileid", res.body.consumerProfileId);
+  }
+  
+  // Set consumer profile address to variable for further use
+  if(Array.isArray(res.body.addresses) && res.body.addresses.length > 0) {
+  var firstelement = res.body.addresses[0].addressIdentifier;
+  bru.setVar("consumerprofileaddressid", String(firstelement));
+  }
+  
+  // Set default SEPA payment method ID to variable for further use
+  if(res.body.paymentMethodType && res.body.paymentMethodType.defaultMOP && res.body.paymentMethodType.defaultMOP.sepa && res.body.paymentMethodType.defaultMOP.sepa.paymentMethodId) {
+  bru.setVar("consumerprofilepymntID", res.body.paymentMethodType.defaultMOP.sepa.paymentMethodId);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

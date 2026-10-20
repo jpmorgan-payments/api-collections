@@ -1,0 +1,59 @@
+meta {
+  name: Update Communication Method (by id)
+  type: http
+  seq: 24
+}
+
+patch {
+  url: {{consumerprofile_url}}/consumer-profiles/{{consumerprofileid}}/communication/{{consumerProfileCommunicationId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  requestIdentifier: {{requestId}}
+  merchantIdentifier: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "email": {
+      "emailAddress": "{{$randomEmail}}",
+      "emailAddressType": "Home"
+    },
+    "phone": {
+      "phoneNumber": {{phoneNumber}},
+      "countryCode": "1",
+      "phoneNumberType": "Home"
+    }
+  }
+}
+
+vars:pre-request {
+  consumerprofilecommunicationid: a068d8dc-557a-4ca9-b7d9-9ec72d8f6010
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+tests {
+  // Set consumer profile id to variable for further use
+  if(res.body.consumerProfileId) {
+  bru.setVar("consumerprofileid", res.body.consumerProfileId);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

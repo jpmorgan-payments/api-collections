@@ -1,0 +1,226 @@
+meta {
+  name: Generate a report (Charge Summary report)
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{reporting_url}}/reports
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "entityType": "PE",
+    "entityIds": [
+      "993193196193"
+    ],
+    "preBuiltConfigurationId": "preset_Unified_Charge_Summary_Report",
+    "reportSections": [
+      {
+        "sectionReportTypeId": "3003",
+        "sectionReportTypeName": "Submission Details",
+        "sectionSelectedFields": [
+          {
+            "alias": "Record Type",
+            "constantValueText": "Charge Summary"
+          },
+          {
+            "reportAttributeName": "Presentment Currency Code"
+          },
+          {
+            "reportAttributeName": "Settlement Currency Code"
+          },
+          {
+            "reportAttributeName": "Payment Method Code"
+          },
+          {
+            "reportAttributeName": "Charge Category Text"
+          },
+          {
+            "reportAttributeName": "Charge Subcategory Text"
+          },
+          {
+            "reportAttributeName": "Action Type Code Text"
+          },
+          {
+            "reportAttributeName": "Merchant Service Fee Schedule Identifier"
+          },
+          {
+            "reportAttributeName": "Fee Text"
+          },
+          {
+            "reportAttributeName": "Interchange Qualification Code"
+          },
+          {
+            "alias": "Unit Quantity",
+            "reportAttributeName": "Unit Quantity Number",
+            "aggregateOperationText": "sum"
+          },
+          {
+            "reportAttributeName": "Unit Fee Amount"
+          },
+          {
+            "alias": "Transaction Amount",
+            "reportAttributeName": "Settlement Amount",
+            "aggregateOperationText": "sum"
+          },
+          {
+            "reportAttributeName": "Fee Rate"
+          },
+          {
+            "alias": "Total Charge",
+            "reportAttributeName": "Settled Total Fee Amount",
+            "aggregateOperationText": "sum"
+          },
+          {
+            "alias": "Sales Tax",
+            "reportAttributeName": "Sales Tax",
+            "aggregateOperationText": "sum"
+          },
+          {
+            "alias": "Federal Tax",
+            "reportAttributeName": "Federal Tax",
+            "aggregateOperationText": "sum"
+          },
+          {
+            "alias": "Provincial Tax",
+            "reportAttributeName": "Provincial Tax",
+            "aggregateOperationText": "sum"
+          },
+          {
+            "alias": "Total Charge after Tax",
+            "reportAttributeName": "Total Charge after Tax",
+            "aggregateOperationText": "sum"
+          }
+        ],
+        "sectionFilterAttributeList": [
+          {
+            "reportAttributeName": "Charge Subcategory Text",
+            "filterAttributeCode": "IN (\"Authorization Fees\",\"Interchange & Assessment Fees\",\"PDE Fees\",\"Deposit Fees\",\"Equipment Fees\",\"Monthly Fees\",\"Paymentech Non-Transaction Fees\",\"Funds Transfer Fees\",\"Other Fees\",\"Paymentech Fees\",\"Project Expenses\",\"Promotion Fees\", \"Interchange Fees\", \"Assessment Fees\",\"Monthly Non-Transaction Fees\")"
+          },
+          {
+            "reportAttributeName": "Fee Text",
+            "filterAttributeCode": "NOT IN(\"Provincial Tax\",\"Federal Tax\",\"Sales Tax\")"
+          }
+        ],
+        "sectionSortOrderList": [
+          {
+            "reportAttributeName": "Settlement Currency Code",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Payment Method Code",
+            "sortOrderCode": "asc"
+          },
+          {
+            "reportAttributeName": "Charge Category Text",
+            "sortOrderCode": "desc"
+          },
+          {
+            "reportAttributeName": "Charge Subcategory Text",
+            "sortOrderCode": "asc"
+          }
+        ]
+      },
+      {
+        "sectionReportTypeId": "3003",
+        "sectionReportTypeName": "Submission Details",
+        "distinctSelectIndicator": true,
+        "sectionSelectedFields": [
+          {
+            "alias": "Record Type",
+            "constantValueText": "Tax Information"
+          },
+          {
+            "reportAttributeName": "Entity Identifier"
+          },
+          {
+            "reportAttributeName": "Entity Type Code"
+          },
+          {
+            "reportAttributeName": "Acquirer Codice Fiscale"
+          },
+          {
+            "reportAttributeName": "Acquirer Legal Entity"
+          },
+          {
+            "reportAttributeName": "CPSI GST Registration Number"
+          },
+          {
+            "reportAttributeName": "CPSI QST Registration Number"
+          },
+          {
+            "reportAttributeName": "Merchant Codice Fiscale"
+          },
+          {
+            "reportAttributeName": "Recipient Address"
+          },
+          {
+            "reportAttributeName": "Recipient Legal Entity"
+          }
+        ],
+        "sectionFilterAttributeList": [
+          {
+            "reportAttributeName": "Charge Subcategory Text",
+            "filterAttributeCode": "IN (\"Authorization Fees\",\"Interchange & Assessment Fees\",\"PDE Fees\",\"Deposit Fees\",\"Equipment Fees\",\"Monthly Fees\",\"Paymentech Non-Transaction Fees\",\"Funds Transfer Fees\",\"Other Fees\",\"Paymentech Fees\",\"Project Expenses\",\"Promotion Fees\", \"Interchange Fees\", \"Assessment Fees\",\"Monthly Non-Transaction Fees\")"
+          },
+          {
+            "reportAttributeName": "Entity Identifier",
+            "filterAttributeCode": "IS NOT NULL"
+          }
+        ]
+      }
+    ],
+    "frequencyConfig": {
+      "scheduleFrequency": "Adhoc",
+      "reportingPeriodStartTimestamp": "{{reportingPeriodStartTimestamp}}",
+      "reportingPeriodEndTimestamp": "{{reportingPeriodEndTimestamp}}"
+    },
+    "reportConfigurationName": "Charge Summary",
+    "reportName": "Charge Summary",
+    "reportConfigType": "PreBuilt",
+     "fileDelimiter": ",",
+    "csvColumnNameDisplayIndicator": true,
+    "splitIndicator": false,
+    "splitChildEntitiesIndicator": false,
+    "reportHeader": "EntityId=<Processing Entity ID>,ReportTypeName=<Report Type>,Frequency=<frequency>,FromDate=<From Date YYYY-MM-DD>,ToDate=<To Date YYYY-MM-DD>,GenerationDate=<Generation Date YYYY-MM-DD>,GenerationTime=<Generation Time HH:MM:SS>",
+    "fileHeader": "BEGIN,EntityId=<Processing Entity ID>,Frequency=<frequency>",
+    "fileTrailer": "END,EntityId=<Processing Entity ID>,Frequency=<frequency>",
+    "languageCode": "en-us"
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+  
+  // Reporting window (local time): start = today-15d 00:00:00, end = today-1d 23:59:59
+  const pad = (n) => String(n).padStart(2, "0");
+  const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+  bru.setVar("reportingPeriodStartTimestamp", `${daysAgo(15)} 00:00:00`);
+  bru.setVar("reportingPeriodEndTimestamp", `${daysAgo(1)} 23:59:59`);
+}
+
+docs {
+  [Reporting API](https://developer.payments.jpmorgan.com/api/commerce/optimization-protection/reporting/reporting)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

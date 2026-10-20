@@ -17,6 +17,10 @@ vars {
   notifications_url: https://mns-aws-cat.jpmchase.com/v1
   @description('Default test card number (PAN) used across sample requests via {{testCardNum}}')
   testCardNum: 4112344112344113
+  @description('Reporting API base URL (v1) — CAT/test')
+  reporting_url: https://api.reports.test.jpmorgan.com/api/v1
+  @description('Mastercard test card number (PAN) for the Mastercard Transaction Link Identifier (TLID) samples via {{mcTestCardNum}}')
+  mcTestCardNum: 2221000000000009
 }
 vars:secret [
   @description('Authorization token, auto-created by JWT and Access Token request')
