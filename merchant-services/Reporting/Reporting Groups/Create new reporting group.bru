@@ -1,0 +1,57 @@
+meta {
+  name: Create new reporting group
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{reportinggroups_url}}/reporting-groups
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  request-id: {{requestId}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "reportingGroupName": "PRGTD{{$randomAlphaNumeric}}",
+    "reportingGroupDescription": "PRGTD{{$randomAlphaNumeric}}",
+    "childEntityInfo": [
+      {
+        "entityType": "PE",
+        "entityIds": [
+          {{merchantId}}
+        ]
+      }
+    ]
+  }
+}
+
+script:pre-request {
+  // Generate GUID for requestId and store it in a variable that could be used for other things (refund, void, sale, etc)
+  bru.setVar("requestId", require("uuid").v4())
+  
+  // Generate merchantOrderNumber using UNIX timestamp and store in variable
+  bru.setVar("merchantOrderNumber", Math.floor(Date.now() / 1000));
+}
+
+script:post-response {
+  const group = res.getBody()?.reportingGroupList?.[0];
+  if (group) {
+    bru.setVar("reportingGroupId", String(group.reportingGroupId));
+    bru.setVar("reportingGroupType", group.reportingGroupType);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
