@@ -24,7 +24,7 @@ auth:oauth2 {
 }
 
 auth:oauth2:additional_params:access_token_req:body {
-  resource: JPMC:URI:RS-105239-165230-HelixAPIEntitlementsSANDBOX-PROD
+  resource: {{resourceId_disputes}}
   client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
   client_assertion: {{JWSPayload}}
 }
