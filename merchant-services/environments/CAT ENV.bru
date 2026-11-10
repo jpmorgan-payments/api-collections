@@ -21,6 +21,8 @@ vars {
   reporting_url: https://api.reports.test.jpmorgan.com/api/v1
   @description('Mastercard test card number (PAN) for the Mastercard Transaction Link Identifier (TLID) samples via {{mcTestCardNum}}')
   mcTestCardNum: 2221000000000009
+  @description('Disputes API base URL (v1) — CAT/test')
+  disputes_url: https://msdisputes-cat.prod.aws.jpmchase.net/commerce/v1
 }
 vars:secret [
   @description('Authorization token, auto-created by JWT and Access Token request')

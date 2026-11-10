@@ -1,0 +1,52 @@
+meta {
+  name: 04 RetrieveStatus
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{disputes_url}}/disputes/status-query
+  body: json
+  auth: inherit
+}
+
+headers {
+  request-id: {{uuid}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "statusInquiryParameters": {
+      "companyIds": [
+      ],
+      "merchantIds": [
+        "{{merchantId}}"
+      ],
+      "disputeIds": [
+        {{disputeId}}
+      ]
+    },
+    "pagination": {
+      "cursor": "",
+      "pageSize": 2000
+    }
+  }
+}
+
+script:pre-request {
+  bru.setVar("uuid", require("uuid").v4());
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  [Disputes API](https://developer.payments.jpmorgan.com/api/commerce/optimization-protection/dispute-management/dispute-management#/operations/fetchDisputeStatuses)
+}
