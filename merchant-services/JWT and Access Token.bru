@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: https://idag2.jpmorganchase.com/adfs/oauth2/token
+  url: {{idp_token_url}}
   body: formUrlEncoded
   auth: none
 }
@@ -27,7 +27,7 @@ script:pre-request {
   const moment = require('moment');
   var data = {
   "iss": bru.getEnvVar("clientId"),
-  "aud": "https://idag2.jpmorganchase.com/adfs/oauth2/token",
+  "aud": bru.getEnvVar("idp_token_url"),
   "sub": bru.getEnvVar("clientId"),
   "iat": parseInt(new Date().getTime() / 1000),
   "exp": parseInt(new Date().getTime() / 1000) + (5 * 60),

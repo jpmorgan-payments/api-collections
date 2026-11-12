@@ -1,0 +1,39 @@
+meta {
+  name: 03 Accept
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{disputes_url}}/disputes/{{disputeId}}/accept
+  body: json
+  auth: inherit
+}
+
+headers {
+  request-id: {{uuid}}
+  merchant-id: {{merchantId}}
+}
+
+auth:bearer {
+  token: {{auth-token}}
+}
+
+body:json {
+  {
+    "last4CardNumber": "{{cardLast4}}"
+  }
+}
+
+script:pre-request {
+  bru.setVar("uuid", require("uuid").v4());
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  [Disputes API](https://developer.payments.jpmorgan.com/api/commerce/optimization-protection/dispute-management/dispute-management
+}
